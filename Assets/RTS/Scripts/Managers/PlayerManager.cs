@@ -6,7 +6,7 @@ public class PlayerManager : MonoBehaviour
 {
 
 	RaycastHit hit;
-	List<UnitController> selectedUnits = new List<UnitController>();
+	public List<UnitController> selectedUnits = new List<UnitController>();
 	bool isDragging = false;
 	Vector3 mousePositon;
 
@@ -29,6 +29,8 @@ public class PlayerManager : MonoBehaviour
 		//Detect if mouse is down
 		if (Input.GetMouseButtonDown(0))
 		{
+			isDragging = true;
+
 			mousePositon = Input.mousePosition;
 			//Create a ray from the camera to our space
 			var camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -40,11 +42,10 @@ public class PlayerManager : MonoBehaviour
 				if (hit.transform.CompareTag("PlayerUnit"))
 				{
 					SelectUnit(hit.transform.GetComponent<UnitController>(), Input.GetKey(KeyCode.LeftShift));
+					isDragging = false;
+
 				}
-				else
-				{
-					isDragging = true;
-				}
+ 
 			}
 
 		}

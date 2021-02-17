@@ -12,10 +12,11 @@ public class UnitController : MonoBehaviour {
     public UnitStats unitStats;
 	public bool targetAcquired;
 
-
+    private GameObject selectUI;
 
 	private void Start()
     {
+        selectUI = transform.Find("Highlight").gameObject;
         navmeshPathfinding = GetComponent<NavmeshPathfinding>();
         attackTimer = unitStats.attackSpeed;
     }
@@ -69,7 +70,7 @@ public class UnitController : MonoBehaviour {
 
     public void SetSelected(bool isSelected)
     {
-        transform.Find("Highlight").gameObject.SetActive(isSelected);
+        selectUI.SetActive(isSelected);
     }
 
     public void SetNewTarget(Transform enemy, List<GameObject> selectedUnits)
