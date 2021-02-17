@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class UnitController : MonoBehaviour {
 
-    private NavMeshAgent navAgent;
+    public NavmeshPathfinding navmeshPathfinding;
     public Transform target;
     private float attackTimer;
 
@@ -16,7 +16,7 @@ public class UnitController : MonoBehaviour {
 
 	private void Start()
     {
-        navAgent = GetComponent<NavMeshAgent>();
+        navmeshPathfinding = GetComponent<NavmeshPathfinding>();
         attackTimer = unitStats.attackSpeed;
     }
 
@@ -26,24 +26,14 @@ public class UnitController : MonoBehaviour {
 
         if(Target != null)
         {
-            navAgent.destination = Target.position;
-
             var distance = (transform.position - Target.position).magnitude;
 
 			if (distance <= unitStats.attackRange)
             {
-
-				navAgent.destination = transform.position;
-				//Rotate(currentTarget);
-				Attack();
+ 				Attack();
             }
-
-
         }
-
-
     }
-
 
 	public void CancelOrder()
 	{
@@ -70,25 +60,30 @@ public class UnitController : MonoBehaviour {
 		transform.rotation = Quaternion.LookRotation(newDir);
 	}
 
-	public void MoveUnit(Vector3 dest)
+	public void MoveUnit(Vector3 dest, List<GameObject> selectedUnits)
     {
-		navAgent.destination = dest;
-
+        navmeshPathfinding.SetDestination(dest, selectedUnits);
     }
+
+ 
 
     public void SetSelected(bool isSelected)
     {
         transform.Find("Highlight").gameObject.SetActive(isSelected);
     }
 
-    public void SetNewTarget(Transform enemy)
+    public void SetNewTarget(Transform enemy, List<GameObject> selectedUnits)
     {
+ 
         Target = enemy;
 		Vector3 position = Target.position;
 		Vector3 aimTarget = new Vector3();
 		aimTarget.Set(position.x, position.y, position.z);
 		targetAcquired = true;
-	}
+
+        navmeshPathfinding.SetDestination(position, selectedUnits);
+
+    }
 
     public void Attack()
     {
