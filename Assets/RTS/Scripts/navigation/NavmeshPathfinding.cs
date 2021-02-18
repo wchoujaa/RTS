@@ -9,17 +9,12 @@ public class NavmeshPathfinding : MonoBehaviour
 {
 
 
-	public Vector3 target;
-	[Header("Agent Settings")]
-	public float maxSpeed;
-	public float maxAccel;
-	public float maxAngularSpeed;
+	public Vector3 target = Vector3.negativeInfinity;
 
 	private NavMeshAgent navmeshAgent;
-	private FlockingBehaviour flockingBehaviour;
-	Vector3 desiredDirection = new Vector3();
+	private UnitController unitController;
 
-	public Vector3 velocity { get => navmeshAgent.velocity; set => navmeshAgent.velocity = value; }
+
 
 
 
@@ -29,7 +24,7 @@ public class NavmeshPathfinding : MonoBehaviour
 	{
 
 		navmeshAgent = GetComponent<NavMeshAgent>();
-		flockingBehaviour = GetComponent<FlockingBehaviour>();
+		unitController = GetComponent<UnitController>();
 	}
 
 	// Update is called once per frame
@@ -47,16 +42,14 @@ public class NavmeshPathfinding : MonoBehaviour
 	}
 
 
- 
 
-	public void SetDestination(Vector3 target, List<GameObject> selectedUnits)
+
+	public void SetDestination(Vector3 target)
 	{
 		this.target = target;
-		flockingBehaviour.Targets = selectedUnits;
-		flockingBehaviour.target = target;
-		navmeshAgent.speed = maxSpeed;
-		navmeshAgent.acceleration = maxAccel;
-		navmeshAgent.angularSpeed = maxAngularSpeed;
+		navmeshAgent.speed = unitController.unitStats.maxSpeed;
+		navmeshAgent.acceleration = unitController.unitStats.maxAccel;
+		navmeshAgent.angularSpeed = unitController.unitStats.maxAngularSpeed;
 		navmeshAgent.SetDestination(target);
 	}
 }

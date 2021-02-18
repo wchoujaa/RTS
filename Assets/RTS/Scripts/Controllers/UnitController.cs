@@ -3,38 +3,51 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class UnitController : MonoBehaviour {
+public class UnitController : MonoBehaviour
+{
 
-    public NavmeshPathfinding navmeshPathfinding;
-    public Transform target;
-    private float attackTimer;
+	public NavmeshPathfinding navmeshPathfinding;
+	public Transform target;
+	private float attackTimer;
 
-    public UnitStats unitStats;
+	public UnitStats unitStats;
 	public bool targetAcquired;
 
-    private GameObject selectUI;
+	private GameObject selectUI;
+	public bool isGroupLeader = false;
+	private GroupManager groupManager;
+	public enum State
+	{
+		IDLE,
+		MOVING,
+		ATTACKING
+	}
+
+	public State state;
 
 	private void Start()
-    {
-        selectUI = transform.Find("Highlight").gameObject;
-        navmeshPathfinding = GetComponent<NavmeshPathfinding>();
-        attackTimer = unitStats.attackSpeed;
-    }
+	{
+		selectUI = transform.Find("Highlight").gameObject;
+		navmeshPathfinding = GetComponent<NavmeshPathfinding>();
+		groupManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GroupManager>();
+		attackTimer = unitStats.attackSpeed;
+		state = State.IDLE;
+	}
 
-    private void Update()
-    {
-        attackTimer += Time.deltaTime;
+	private void Update()
+	{
+		attackTimer += Time.deltaTime;
 
-        if(Target != null)
-        {
-            var distance = (transform.position - Target.position).magnitude;
+		if (Target != null)
+		{
+			var distance = (transform.position - Target.position).magnitude;
 
 			if (distance <= unitStats.attackRange)
-            {
- 				Attack();
-            }
-        }
-    }
+			{
+				Attack();
+			}
+		}
+	}
 
 	public void CancelOrder()
 	{
@@ -45,6 +58,7 @@ public class UnitController : MonoBehaviour {
 	public void StopShooting()
 	{
 		targetAcquired = false;
+		state = State.IDLE;
 	}
 
 	void Rotate(Transform target)
@@ -61,57 +75,59 @@ public class UnitController : MonoBehaviour {
 		transform.rotation = Quaternion.LookRotation(newDir);
 	}
 
-	public void MoveUnit(Vector3 dest, List<GameObject> selectedUnits)
-    {
-        navmeshPathfinding.SetDestination(dest, selectedUnits);
-    }
+	public void MoveUnit(Vector3 dest)
+	{
+		state = State.MOVING;
+		navmeshPathfinding.SetDestination(dest);
+		groupManager.addToGroup(dest, this.gameObject);
+	}
 
- 
 
-    public void SetSelected(bool isSelected)
-    {
-        selectUI.SetActive(isSelected);
-    }
 
-    public void SetNewTarget(Transform enemy, List<GameObject> selectedUnits)
-    {
- 
-        Target = enemy;
+	public void SetSelected(bool isSelected)
+	{
+		selectUI.SetActive(isSelected);
+	}
+
+	public void SetNewTarget(Transform enemy)
+	{
+
+		Target = enemy;
 		Vector3 position = Target.position;
 		Vector3 aimTarget = new Vector3();
 		aimTarget.Set(position.x, position.y, position.z);
 		targetAcquired = true;
 
-        navmeshPathfinding.SetDestination(position, selectedUnits);
+		navmeshPathfinding.SetDestination(position);
 
-    }
+	}
 
-    public void Attack()
-    {
-        if(attackTimer >= unitStats.attackSpeed)
-        {
-            RTSGameManager.UnitTakeDamage(this, Target.GetComponent<UnitController>());
-            attackTimer = 0;
+	public void Attack()
+	{
+		if (attackTimer >= unitStats.attackSpeed)
+		{
+			RTSGameManager.UnitTakeDamage(this, Target.GetComponent<UnitController>());
+			attackTimer = 0;
 		}
-        
-    }
 
-    public void TakeDamage(UnitController enemy, float damage)
-    {
-        StartCoroutine(Flasher(GetComponent<Renderer>().material.color));
-    }
+	}
 
-    IEnumerator Flasher(Color defaultColor)
-    {
-        var renderer = GetComponent<Renderer>();
-        for (int i = 0; i < 2; i++)
-        {
-            renderer.material.color = Color.gray;
-            yield return new WaitForSeconds(.05f);
-            renderer.material.color = defaultColor;
-            yield return new WaitForSeconds(.05f);
-        }
-    }
+	public void TakeDamage(UnitController enemy, float damage)
+	{
+		StartCoroutine(Flasher(GetComponent<Renderer>().material.color));
+	}
+
+	IEnumerator Flasher(Color defaultColor)
+	{
+		var renderer = GetComponent<Renderer>();
+		for (int i = 0; i < 2; i++)
+		{
+			renderer.material.color = Color.gray;
+			yield return new WaitForSeconds(.05f);
+			renderer.material.color = defaultColor;
+			yield return new WaitForSeconds(.05f);
+		}
+	}
 
 
 	public Transform Target

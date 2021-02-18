@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerManager : MonoBehaviour
+public class SelectionManager : MonoBehaviour
 {
 
 	RaycastHit hit;
@@ -45,7 +45,7 @@ public class PlayerManager : MonoBehaviour
 					isDragging = false;
 
 				}
- 
+
 			}
 
 		}
@@ -77,17 +77,13 @@ public class PlayerManager : MonoBehaviour
 				//Do something with that data 
 				//Debug.Log(hit.transform.tag);
 
-				List<GameObject> selectedObject = new List<GameObject>();
-				foreach (var selectableObj in selectedUnits)
-				{
-					selectedObject.Add(selectableObj.gameObject);
-				}
+
 
 				if (hit.transform.CompareTag("Ground"))
 				{
 					foreach (var selectableObj in selectedUnits)
 					{
-						selectableObj.MoveUnit(hit.point, selectedObject);
+						selectableObj.MoveUnit(hit.point);
 					}
 
 
@@ -97,7 +93,7 @@ public class PlayerManager : MonoBehaviour
 				{
 					foreach (var selectableObj in selectedUnits)
 					{
-						selectableObj.SetNewTarget(hit.transform, selectedObject);
+						selectableObj.SetNewTarget(hit.transform);
 
 					}
 				}

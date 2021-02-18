@@ -10,4 +10,9 @@ public class UnitStats : ScriptableObject {
     public float attackSpeed;
     public float health;
 	public float rotationSpeed;
+    [Header("Agent Settings")]
+    public float maxSpeed;
+    public float maxAccel;
+    public float maxAngularSpeed; 
+   
 }
