@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -6,46 +7,70 @@ using UnityEngine.AI;
 public class FlockingBehaviour : MonoBehaviour
 {
 
-	private NavmeshPathfinding nvmPathfinding;
-	private Vector3 target;
+	public Group group;
+
+
 	private NavMeshAgent navmeshAgent;
 
 	public FlockingAsset flockingAsset;
-	public List<GameObject> targets;
-	public Vector3 test = new Vector3();
-	public List<GameObject> Targets { get => targets; set => targets = value; }
-	public Vector3 Target { get => nvmPathfinding.target; }
+
 
 	public Vector3 desiredDirection = new Vector3();
 
-	private PlayerUnitController pController;
-
+	private UnitController uController;
+	public bool shouldStop = false;
 	// Start is called before the first frame update
 	void Start()
 	{
-		nvmPathfinding = GetComponent<NavmeshPathfinding>();
-		targets = new List<GameObject>();
+
 		navmeshAgent = GetComponent<NavMeshAgent>();
-		pController = GetComponent<PlayerUnitController>();
+		uController = GetComponent<UnitController>();
 	}
 
 
 	void FixedUpdate()
 	{
 
-		if (pController.state == UnitController.State.IDLE) return;
+
+		if (group == null) return;
+
+		if (TargetReached())
+		{
+			group.targetReached = true;
+		}
+
+
+		if (group.targetReached)
+		{
+			shouldStop = true;
+			navmeshAgent.SetDestination(transform.position);
+		} else
+		{
+			shouldStop = false;
+		}
+
 
 		desiredDirection = BoidCohesion();
 		desiredDirection += BoidSeparation();
-		desiredDirection += Arrive();
-		desiredDirection += Align()  ;
-		
-
-		//navmeshAgent.velocity += desiredDirection;
-		desiredDirection = Vector3.ClampMagnitude(desiredDirection, nvmPathfinding.maxSpeed);
+		//desiredDirection += Arrive();
+		desiredDirection += Align();
 		navmeshAgent.velocity += desiredDirection;
+		//navmeshAgent.velocity = Vector3.ClampMagnitude(navmeshAgent.velocity, uController.unitStats.maxSpeed);
 
 
+	}
+
+	private IEnumerator DelayTargetNotification()
+	{
+
+		yield return new WaitForSeconds(flockingAsset.targetReachedNotifyTime);
+		shouldStop = true;
+		navmeshAgent.SetDestination(transform.position);
+	}
+
+	private bool TargetReached()
+	{
+		return (group.target - transform.position).magnitude < flockingAsset.targetRadius;
 	}
 
 
@@ -60,7 +85,7 @@ public class FlockingBehaviour : MonoBehaviour
 		Vector3 steering = new Vector3();
 		int count = 0;
 
-		foreach (GameObject other in targets) //iterate through the group of objects
+		foreach (GameObject other in group.members) //iterate through the group of objects
 		{
 
 			if (other != null)
@@ -96,7 +121,7 @@ public class FlockingBehaviour : MonoBehaviour
 		int count = 0;
 
 		// For every boid in the system, check if it's too close
-		foreach (GameObject other in targets)
+		foreach (GameObject other in group.members)
 		{
 
 			if (other != null)
@@ -133,8 +158,8 @@ public class FlockingBehaviour : MonoBehaviour
 	{
 
 
-		Vector3 steering = new Vector3();  
-		Vector3 direction = Target - transform.position;
+		Vector3 steering = new Vector3();
+		Vector3 direction = group.target - transform.position;
 		float distance = direction.magnitude;
 		float targetSpeed;
 
@@ -145,23 +170,23 @@ public class FlockingBehaviour : MonoBehaviour
 
 		if (distance > flockingAsset.slowRadius)
 		{
-			targetSpeed = nvmPathfinding.maxSpeed; //proceed at maxspeed
+			targetSpeed = uController.unitStats.maxSpeed; //proceed at maxspeed
 		}
 		else
 		{
-			targetSpeed = nvmPathfinding.maxSpeed * distance / flockingAsset.slowRadius;
+			targetSpeed = uController.unitStats.maxSpeed * distance / flockingAsset.slowRadius;
 		}
 
 		Vector3 desiredVelocity = direction;
 		desiredVelocity.Normalize();
 		desiredVelocity *= targetSpeed;
-		steering = desiredVelocity - nvmPathfinding.Velocity;
+		steering = desiredVelocity - uController.Velocity;
 		steering /= flockingAsset.timeToTarget;
 
-		if (steering.magnitude > nvmPathfinding.maxAccel)
+		if (steering.magnitude > uController.unitStats.maxAccel)
 		{
 			steering.Normalize();
-			steering *= nvmPathfinding.maxAccel;
+			steering *= uController.unitStats.maxAccel;
 		}
 		return steering * flockingAsset.arrive;
 	}
@@ -170,6 +195,8 @@ public class FlockingBehaviour : MonoBehaviour
 	{
 
 		Vector3 steering = new Vector3();
+		Vector3 direction = group.target - transform.position;
+	 
 		float targetOrientation = 0f;
 		//float targetOrientation = 0f;//target.GetComponent<Agent>().orientation;
 		//float rotation = targetOrientation - navmeshAgent.orientation;

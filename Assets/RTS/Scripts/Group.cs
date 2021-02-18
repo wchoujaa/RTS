@@ -2,30 +2,44 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[SerializeField]
 public class Group
 {
-	public List<GameObject> group = new List<GameObject>(); //list of units in the group
+	public List<GameObject> members = new List<GameObject>(); //list of units in the group
 															//Dictionary<int, bool> isLeader = new Dictionary<int, bool>(); //maps ID's to whether or not the unit is a leader
 	public GameObject leader;
 
 	public float maxSpeed = float.MaxValue; //
 
+	public Vector3 target;
+
+	public bool targetReached { get; internal set; }
+
 	//add a new member to the group
+
+
+
+	public Group(Vector3 target)
+	{
+		this.target = target;
+	}
+
+
 	public void addMember(GameObject member)
 	{
 		if (leader == null) //if there is no leader
 		{
 			leader = member;
 			//set leader flag
-			member.GetComponent<UnitController>().isGroupLeader = true;
+			member.GetComponent<UnitController>().IsGroupLeader = true;
 		}
 
-		if (member.GetComponent<UnitController>().unitStats.speed < maxSpeed) //check who the slowest member of the movement group is
+		if (member.GetComponent<UnitController>().unitStats.maxSpeed < maxSpeed) //check who the slowest member of the movement group is
 		{
-			maxSpeed = member.GetComponent<UnitController>().unitStats.speed; //set everyone to match the slowest member's pace
+			maxSpeed = member.GetComponent<UnitController>().unitStats.maxSpeed; //set everyone to match the slowest member's pace
 		}
 
-		group.Add(member);
+		members.Add(member);
 	}
 
 	//remove a unit from the group and assign a new leader if the previous leader is removed
@@ -33,16 +47,16 @@ public class Group
 	{
 		if (member == leader) //if the group leader is the object we are removing
 		{
-			group.Remove(member); //remove the leader from the list of units
-			member.GetComponent<UnitController>().isGroupLeader = false; //set unit leader flag to FALSE
+			members.Remove(member); //remove the leader from the list of units
+			member.GetComponent<UnitController>().IsGroupLeader = false; //set unit leader flag to FALSE
 
-			if (group.Count > 0)
+			if (members.Count > 0)
 			{
-				if (group[0] != null)
+				if (members[0] != null)
 				{
-					leader = group[0]; //re-add the new top member as the leader
+					leader = members[0]; //re-add the new top member as the leader
 									   //update the leader's behavior
-					leader.GetComponent<UnitController>().isGroupLeader = true; //set unit leader flag to TRUE
+					leader.GetComponent<UnitController>().IsGroupLeader = true; //set unit leader flag to TRUE
 				}
 			}
 			else
@@ -52,19 +66,19 @@ public class Group
 		}
 		else
 		{
-			group.Remove(member);
+			members.Remove(member);
 		}
 
-		member.GetComponent<NavmeshPathfinding>().maxSpeed = member.GetComponent<UnitController>().unitStats.speed;
+		member.GetComponent<NavmeshPathfinding>().speed = member.GetComponent<UnitController>().unitStats.maxSpeed;
 	}
 
 	public bool containsMember(GameObject member)
 	{
-		return group.Contains(member);
+		return members.Contains(member);
 	}
 
 	public bool isEmpty()
 	{
-		return (!(group.Count > 0));
+		return (!(members.Count > 0));
 	}
 }

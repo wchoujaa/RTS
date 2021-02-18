@@ -29,7 +29,7 @@ public class TurretShooting : MonoBehaviour
 
 			turretRotation.SetIdle(false);
 
-			var currentTarget = unitController.Target;
+			var currentTarget = unitController.target;
 			var distance = (transform.position - currentTarget.position).magnitude;
 
 			if (distance <= unitStats.attackRange)

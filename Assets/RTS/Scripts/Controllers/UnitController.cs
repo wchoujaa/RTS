@@ -6,7 +6,10 @@ using UnityEngine.AI;
 public class UnitController : MonoBehaviour
 {
 
+	[HideInInspector]
 	public NavmeshPathfinding navmeshPathfinding;
+	[HideInInspector]
+	FlockingBehaviour flocking;
 	public Transform target;
 	private float attackTimer;
 
@@ -14,9 +17,10 @@ public class UnitController : MonoBehaviour
 	public bool targetAcquired;
 
 	private GameObject selectUI;
-	public bool isGroupLeader = false;
+	private bool isGroupLeader = false;
 	private GroupManager groupManager;
-	public enum State
+
+ 	public enum State
 	{
 		IDLE,
 		MOVING,
@@ -29,18 +33,23 @@ public class UnitController : MonoBehaviour
 	{
 		selectUI = transform.Find("Highlight").gameObject;
 		navmeshPathfinding = GetComponent<NavmeshPathfinding>();
+		flocking = GetComponent<FlockingBehaviour>();
 		groupManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GroupManager>();
 		attackTimer = unitStats.attackSpeed;
 		state = State.IDLE;
+		var renderer = GetComponent<Renderer>();
+
+		renderer.material.color = unitStats.color;
+
 	}
 
 	private void Update()
 	{
 		attackTimer += Time.deltaTime;
 
-		if (Target != null)
+		if (target != null)
 		{
-			var distance = (transform.position - Target.position).magnitude;
+			var distance = (transform.position - target.position).magnitude;
 
 			if (distance <= unitStats.attackRange)
 			{
@@ -52,7 +61,7 @@ public class UnitController : MonoBehaviour
 	public void CancelOrder()
 	{
 		targetAcquired = false;
-		Target = null;
+		target = null;
 	}
 
 	public void StopShooting()
@@ -77,9 +86,17 @@ public class UnitController : MonoBehaviour
 
 	public void MoveUnit(Vector3 dest)
 	{
+		Vector3 previousDestination = navmeshPathfinding.destination;
 		state = State.MOVING;
 		navmeshPathfinding.SetDestination(dest);
-		groupManager.addToGroup(dest, this.gameObject);
+
+		if (previousDestination != Vector3.negativeInfinity)
+		{
+			groupManager.removeFromGroup(previousDestination, this.gameObject);
+		} 
+		Group group = groupManager.addToGroup(dest, this.gameObject);
+		flocking.shouldStop = false; 
+		flocking.group = group;
 	}
 
 
@@ -92,8 +109,8 @@ public class UnitController : MonoBehaviour
 	public void SetNewTarget(Transform enemy)
 	{
 
-		Target = enemy;
-		Vector3 position = Target.position;
+		target = enemy;
+		Vector3 position = target.position;
 		Vector3 aimTarget = new Vector3();
 		aimTarget.Set(position.x, position.y, position.z);
 		targetAcquired = true;
@@ -104,9 +121,10 @@ public class UnitController : MonoBehaviour
 
 	public void Attack()
 	{
+		state = State.ATTACKING;
 		if (attackTimer >= unitStats.attackSpeed)
 		{
-			RTSGameManager.UnitTakeDamage(this, Target.GetComponent<UnitController>());
+			RTSGameManager.UnitTakeDamage(this, target.GetComponent<UnitController>());
 			attackTimer = 0;
 		}
 
@@ -129,19 +147,24 @@ public class UnitController : MonoBehaviour
 		}
 	}
 
-
-	public Transform Target
+	public Vector3 Velocity { get => navmeshPathfinding.agent.velocity; set => navmeshPathfinding.agent.velocity = value; }
+	public bool IsGroupLeader
 	{
-		get
+		get => isGroupLeader; set
 		{
-			return target;
-		}
+			var renderer = GetComponent<Renderer>();
 
-		set
-		{
-			target = value;
+			if (value == true)
+			{
+				renderer.material.color = Color.red;
+
+			} else
+			{
+				renderer.material.color = unitStats.color;
+
+			}
+
+			isGroupLeader = value;
 		}
 	}
-
-
 }

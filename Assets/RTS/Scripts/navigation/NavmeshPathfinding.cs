@@ -9,10 +9,11 @@ public class NavmeshPathfinding : MonoBehaviour
 {
 
 
-	public Vector3 target = Vector3.negativeInfinity;
-
-	private NavMeshAgent navmeshAgent;
+	public Vector3 destination = Vector3.negativeInfinity;
+	[HideInInspector]
+	public NavMeshAgent agent;
 	private UnitController unitController;
+	public float speed;
 
 
 
@@ -23,8 +24,9 @@ public class NavmeshPathfinding : MonoBehaviour
 	void Start()
 	{
 
-		navmeshAgent = GetComponent<NavMeshAgent>();
+		agent = GetComponent<NavMeshAgent>();
 		unitController = GetComponent<UnitController>();
+		speed = unitController.unitStats.maxSpeed;
 	}
 
 	// Update is called once per frame
@@ -46,10 +48,13 @@ public class NavmeshPathfinding : MonoBehaviour
 
 	public void SetDestination(Vector3 target)
 	{
-		this.target = target;
-		navmeshAgent.speed = unitController.unitStats.maxSpeed;
-		navmeshAgent.acceleration = unitController.unitStats.maxAccel;
-		navmeshAgent.angularSpeed = unitController.unitStats.maxAngularSpeed;
-		navmeshAgent.SetDestination(target);
+		this.destination = target;
+		agent.speed = speed;
+		agent.acceleration = unitController.unitStats.maxAccel;
+		agent.angularSpeed = unitController.unitStats.maxAngularSpeed;
+		agent.SetDestination(target);
 	}
+
+
+ 
 }

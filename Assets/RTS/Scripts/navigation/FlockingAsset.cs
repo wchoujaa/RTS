@@ -28,6 +28,5 @@ public class FlockingAsset : ScriptableObject
 	public float separation = 1f;
 	public float alignement = 1f;
 	public float arrive = 1f;
-
- 
+	public float targetReachedNotifyTime = 1f;
 }

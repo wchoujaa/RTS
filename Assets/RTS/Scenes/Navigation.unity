@@ -648,6 +648,31 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6462294833702865376, guid: 9141059db88cb0743a6cb453b12a29d6,
+        type: 3}
+      propertyPath: near clip plane
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 6462294833702865376, guid: 9141059db88cb0743a6cb453b12a29d6,
+        type: 3}
+      propertyPath: m_Depth
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6462294833702865376, guid: 9141059db88cb0743a6cb453b12a29d6,
+        type: 3}
+      propertyPath: m_AllowDynamicResolution
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6462294833702865376, guid: 9141059db88cb0743a6cb453b12a29d6,
+        type: 3}
+      propertyPath: m_OcclusionCulling
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6462294833702865376, guid: 9141059db88cb0743a6cb453b12a29d6,
+        type: 3}
+      propertyPath: field of view
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 6462294833702865378, guid: 9141059db88cb0743a6cb453b12a29d6,
         type: 3}
       propertyPath: m_Name
@@ -1249,16 +1274,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4444562789355198641, guid: e666a49e805fec1458197be3e5d0106b,
-        type: 3}
-      propertyPath: separation
-      value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 4444562789355198641, guid: e666a49e805fec1458197be3e5d0106b,
-        type: 3}
-      propertyPath: cohesion
-      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4444562789355198643, guid: e666a49e805fec1458197be3e5d0106b,
         type: 3}
@@ -1877,6 +1892,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1341925693, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
+      propertyPath: groups.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1916159519976378, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
       propertyPath: m_Name
       value: Manager
@@ -2646,7 +2665,7 @@ PrefabInstance:
     - target: {fileID: 4444562789355198640, guid: e666a49e805fec1458197be3e5d0106b,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -18.11
+      value: -2.26
       objectReference: {fileID: 0}
     - target: {fileID: 4444562789355198640, guid: e666a49e805fec1458197be3e5d0106b,
         type: 3}
@@ -2656,7 +2675,7 @@ PrefabInstance:
     - target: {fileID: 4444562789355198640, guid: e666a49e805fec1458197be3e5d0106b,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 21.618
+      value: 21.78
       objectReference: {fileID: 0}
     - target: {fileID: 4444562789355198640, guid: e666a49e805fec1458197be3e5d0106b,
         type: 3}

@@ -17,3 +17,7 @@ MonoBehaviour:
   attackSpeed: 1
   health: 100
   rotationSpeed: 1
+  maxSpeed: 10
+  maxAccel: 20
+  maxAngularSpeed: 180
+  color: {r: 0.9339623, g: 0.8416314, b: 0, a: 0}

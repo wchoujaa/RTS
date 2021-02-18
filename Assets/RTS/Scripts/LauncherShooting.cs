@@ -24,7 +24,7 @@ public class LauncherShooting : MonoBehaviour {
 
 			turretRotation.SetIdle(false);
 
-			var currentTarget = unitController.Target;
+			var currentTarget = unitController.target;
 			var distance = (transform.position - currentTarget.position).magnitude;
 
 			if (distance <= unitStats.attackRange)
@@ -49,7 +49,7 @@ public class LauncherShooting : MonoBehaviour {
 	IEnumerator launchMissile()
 	{
 		isLaunching = true; 
-		Transform currentTarget = unitController.Target;
+		Transform currentTarget = unitController.target;
 
  
 		aapod.Launch(currentTarget);

@@ -4,15 +4,16 @@ using UnityEngine;
 
 [CreateAssetMenu(menuName = "AI/UnitStats")]
 public class UnitStats : ScriptableObject {
-
+    [Header("Combat")]
     public float attackDamage;
     public float attackRange;
     public float attackSpeed;
     public float health;
 	public float rotationSpeed;
-    [Header("Agent Settings")]
+    [Header("Agent")]
     public float maxSpeed;
     public float maxAccel;
-    public float maxAngularSpeed; 
-   
+    public float maxAngularSpeed;
+    [Header("Unit")]
+    public Color color;
 }
