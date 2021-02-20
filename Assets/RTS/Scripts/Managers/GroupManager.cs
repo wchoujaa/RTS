@@ -88,8 +88,7 @@ public class GroupManager : MonoBehaviour
 	//add a new group for the specified target
 	Group addGroup(Vector3 target, GameObject leader)
 	{
-		Group group = null;
-
+		Group group;
 		if (groupTable.ContainsKey(target)) //if we have a list for the target
 		{
 			group = groupTable[target];
@@ -101,8 +100,7 @@ public class GroupManager : MonoBehaviour
 		}
 
 		group.addMember(leader);
-		group.leader = leader;
-		group.targetReached = false;
+
 
 		return group;
 	}

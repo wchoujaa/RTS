@@ -12,13 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e16d1624cfa084f83d866b7b24b007, type: 3}
   m_Name: MediumUnit
   m_EditorClassIdentifier: 
-  neighbordist: 10
-  desiredseparation: 3
-  targetRadius: 1.62
-  slowRadius: 3
+  maxFlockingRadius: 65.6
+  neighbordist: 15
+  desiredseparation: 20.5
+  targetRadius: 3
+  slowRadius: 10
   timeToTarget: 0.1
-  cohesion: 0.1
-  separation: 1
-  alignement: 1
-  arrive: 1
+  cohesion: 1
+  separation: 301
+  alignement: 0
+  arrive: 0
   targetReachedNotifyTime: 1
+  flocking: 1
+  leaderFlocking: 0.432
+  maxSpeedOverflow: 1.25
+  multiplier: 0.1

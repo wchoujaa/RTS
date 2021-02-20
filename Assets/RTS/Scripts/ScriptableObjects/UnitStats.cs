@@ -14,6 +14,8 @@ public class UnitStats : ScriptableObject {
     public float maxSpeed;
     public float maxAccel;
     public float maxAngularSpeed;
+    public float stoppingDistance;
+
     [Header("Unit")]
     public Color color;
 }

@@ -52,6 +52,7 @@ public class NavmeshPathfinding : MonoBehaviour
 		agent.speed = speed;
 		agent.acceleration = unitController.unitStats.maxAccel;
 		agent.angularSpeed = unitController.unitStats.maxAngularSpeed;
+		agent.stoppingDistance = unitController.unitStats.stoppingDistance;
 		agent.SetDestination(target);
 	}
 

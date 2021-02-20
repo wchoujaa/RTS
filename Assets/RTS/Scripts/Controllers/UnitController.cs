@@ -17,7 +17,7 @@ public class UnitController : MonoBehaviour
 	public bool targetAcquired;
 
 	private GameObject selectUI;
-	private bool isGroupLeader = false;
+	public bool isGroupLeader = false;
 	private GroupManager groupManager;
 
  	public enum State
@@ -95,7 +95,7 @@ public class UnitController : MonoBehaviour
 			groupManager.removeFromGroup(previousDestination, this.gameObject);
 		} 
 		Group group = groupManager.addToGroup(dest, this.gameObject);
-		flocking.shouldStop = false; 
+		flocking.targetReached = false; 
 		flocking.group = group;
 	}
 
