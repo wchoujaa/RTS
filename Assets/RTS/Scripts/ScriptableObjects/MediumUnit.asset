@@ -26,4 +26,5 @@ MonoBehaviour:
   flocking: 1
   leaderFlocking: 0.432
   maxSpeedOverflow: 1.25
-  multiplier: 0.1
+  multiplier: 1
+  updateRate: 1

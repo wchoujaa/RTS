@@ -76,10 +76,11 @@ public class FlockingBehaviour : MonoBehaviour
 				targetReached = TargetReached();
 				nearLeader = IsNearLeader();
 
-				yield return new WaitForSeconds(flockingAsset.updateRate);
 
 
 			}
+			yield return new WaitForSeconds(flockingAsset.updateRate);
+
 		}
 
 
