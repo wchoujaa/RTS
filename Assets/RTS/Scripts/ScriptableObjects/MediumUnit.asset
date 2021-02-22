@@ -12,20 +12,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e16d1624cfa084f83d866b7b24b007, type: 3}
   m_Name: MediumUnit
   m_EditorClassIdentifier: 
-  leaderRadius: 20
-  neighbordist: 30
-  desiredseparation: 1.33
+  leaderRadius: 50
+  neighbordist: 50
+  desiredseparation: 50
   slowRadius: 10
   timeToTarget: 0.1
   cohesion: 1
-  separation: 0
+  separation: 3.45
   alignement: 0
   arrive: 0
   targetReachedNotifyTime: 1
   flocking: 1
   leaderFlocking: 1
-  lerpSpeed: 10.55
-  multiplier: 0
+  lerpSpeed: 10
+  multiplier: 300
   updateRate: 0.1
-  leaderPriority: 10
+  leaderPriority: 31
   priority: 50

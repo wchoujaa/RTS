@@ -76,25 +76,64 @@ public class UnitController : MonoBehaviour
 	}
 	private void UpdatePosition()
 	{
-		Vector3 desiredVelocity = navmeshPathfinding.agent.velocity + flockingBehaviour.desiredDirection;
-		desiredVelocity = Vector3.Lerp(navmeshPathfinding.agent.velocity, desiredVelocity, Time.deltaTime * flockingBehaviour.flockingAsset.lerpSpeed);
-		desiredVelocity = Vector3.ClampMagnitude(desiredVelocity, unitStats.maxSpeed);
+		//Vector3 desiredVelocity = navmeshPathfinding.agent.velocity + flockingBehaviour.desiredDirection;
+		//desiredVelocity = Vector3.Lerp(navmeshPathfinding.agent.velocity, desiredVelocity, Time.deltaTime * flockingBehaviour.flockingAsset.lerpSpeed);
+		//desiredVelocity = Vector3.ClampMagnitude(desiredVelocity, unitStats.maxSpeed);
 
 		if (group != null)
 		{
-			if (isGroupLeader && TargetReached())
+			if (isGroupLeader)
 			{
-				group.TargetReached = true;
+				if (TargetReached())
+					group.TargetReached = true;
 			}
-			if (group.TargetReached && (TargetReached() | IsNearLeader()))
+			else
 			{
-				//desiredVelocity = flockingBehaviour.desiredDirection;
+				if (IsNearLeader() && group.TargetReached)
+				{
+					Vector3 destination =  transform.position;
+					destination = Vector3.Lerp(destination, destination + flockingBehaviour.desiredDirection, Time.deltaTime * flockingBehaviour.flockingAsset.lerpSpeed);
+					navmeshPathfinding.SetDestination(destination);
+				}
+				else if (IsNearLeader())
+				{
+					Vector3 destination = group.leader.transform.position;
+					destination = Vector3.Lerp(destination, destination + flockingBehaviour.desiredDirection, Time.deltaTime * flockingBehaviour.flockingAsset.lerpSpeed);
+					navmeshPathfinding.SetDestination(destination);
+				}
+				else
+				{
+
+					Vector3 destination = group.target;
+					destination = Vector3.Lerp(destination, destination + flockingBehaviour.desiredDirection, Time.deltaTime * flockingBehaviour.flockingAsset.lerpSpeed);
+					navmeshPathfinding.SetDestination(destination);
+
+				}
 			}
+
 			targetReached = group.TargetReached;
 		}
 
-		navmeshPathfinding.agent.velocity = desiredVelocity;
 	}
+
+
+	public void MoveUnit(Vector3 dest)
+	{
+		Vector3 previousDestination = navmeshPathfinding.destination;
+		state = State.MOVING;
+		navmeshPathfinding.SetDestination(dest);
+
+		if (previousDestination != Vector3.negativeInfinity)
+		{
+			groupManager.removeFromGroup(previousDestination, this.gameObject);
+		}
+		group = groupManager.addToGroup(dest, this.gameObject);
+		flockingBehaviour.targetReached = false;
+		flockingBehaviour.group = group;
+		navmeshPathfinding.group = group;
+		navmeshPathfinding.agent.avoidancePriority = (isGroupLeader) ? flockingBehaviour.flockingAsset.leaderPriority : flockingBehaviour.flockingAsset.priority;
+	}
+
 
 	private void FixedUpdate()
 	{
@@ -130,22 +169,6 @@ public class UnitController : MonoBehaviour
 		transform.rotation = Quaternion.LookRotation(newDir);
 	}
 
-	public void MoveUnit(Vector3 dest)
-	{
-		Vector3 previousDestination = navmeshPathfinding.destination;
-		state = State.MOVING;
-		navmeshPathfinding.SetDestination(dest);
-
-		if (previousDestination != Vector3.negativeInfinity)
-		{
-			groupManager.removeFromGroup(previousDestination, this.gameObject);
-		}
-		group = groupManager.addToGroup(dest, this.gameObject);
-		flockingBehaviour.targetReached = false;
-		flockingBehaviour.group = group;
-		navmeshPathfinding.group = group;
-		navmeshPathfinding.agent.avoidancePriority = (isGroupLeader) ? flockingBehaviour.flockingAsset.leaderPriority : flockingBehaviour.flockingAsset.priority;
-	}
 
 
 	public void SetSelected(bool isSelected)

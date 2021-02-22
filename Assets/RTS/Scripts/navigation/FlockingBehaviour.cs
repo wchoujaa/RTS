@@ -66,7 +66,6 @@ public class FlockingBehaviour : MonoBehaviour
 				// Use for Debugging
 				targetReached = uController.TargetReached();
 				nearLeader = uController.IsNearLeader();
-				navmeshAgent.radius = flockingAsset.desiredseparation;
 			}
 
 			yield return new WaitForSeconds(flockingAsset.updateRate);
@@ -85,7 +84,7 @@ public class FlockingBehaviour : MonoBehaviour
 		navmeshAgent.SetDestination(transform.position);
 	}
 
- 
+
 
 	// Start is called before the first frame update
 
