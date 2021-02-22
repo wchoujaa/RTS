@@ -9,7 +9,7 @@ public class UnitController : MonoBehaviour
 	[HideInInspector]
 	public NavmeshPathfinding navmeshPathfinding;
 	[HideInInspector]
-	FlockingBehaviour flocking;
+	FlockingBehaviour flockingBehaviour;
 	public Transform target;
 	private float attackTimer;
 
@@ -19,8 +19,9 @@ public class UnitController : MonoBehaviour
 	private GameObject selectUI;
 	public bool isGroupLeader = false;
 	private GroupManager groupManager;
-
- 	public enum State
+	public Group group;
+	public bool targetReached = false;
+	public enum State
 	{
 		IDLE,
 		MOVING,
@@ -29,11 +30,12 @@ public class UnitController : MonoBehaviour
 
 	public State state;
 
-	private void Start()
+	void Start()
 	{
 		selectUI = transform.Find("Highlight").gameObject;
 		navmeshPathfinding = GetComponent<NavmeshPathfinding>();
-		flocking = GetComponent<FlockingBehaviour>();
+		flockingBehaviour = GetComponent<FlockingBehaviour>();
+
 		groupManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GroupManager>();
 		attackTimer = unitStats.attackSpeed;
 		state = State.IDLE;
@@ -43,8 +45,9 @@ public class UnitController : MonoBehaviour
 
 	}
 
-	private void Update()
+	virtual public void Update()
 	{
+
 		attackTimer += Time.deltaTime;
 
 		if (target != null)
@@ -56,7 +59,50 @@ public class UnitController : MonoBehaviour
 				Attack();
 			}
 		}
+
+
+
+		transform.position = navmeshPathfinding.agent.nextPosition;
+
+
 	}
+	private void OnDrawGizmos()
+	{
+
+		if (isGroupLeader)
+		{
+			Gizmos.DrawSphere(transform.position, flockingBehaviour.flockingAsset.leaderRadius);
+		}
+	}
+	private void UpdatePosition()
+	{
+		Vector3 desiredVelocity = navmeshPathfinding.agent.velocity + flockingBehaviour.desiredDirection;
+		desiredVelocity = Vector3.Lerp(navmeshPathfinding.agent.velocity, desiredVelocity, Time.deltaTime * flockingBehaviour.flockingAsset.lerpSpeed);
+		desiredVelocity = Vector3.ClampMagnitude(desiredVelocity, unitStats.maxSpeed);
+
+		if (group != null)
+		{
+			if (isGroupLeader && TargetReached())
+			{
+				group.TargetReached = true;
+			}
+			if (group.TargetReached && (TargetReached() | IsNearLeader()))
+			{
+				//desiredVelocity = flockingBehaviour.desiredDirection;
+			}
+			targetReached = group.TargetReached;
+		}
+
+		navmeshPathfinding.agent.velocity = desiredVelocity;
+	}
+
+	private void FixedUpdate()
+	{
+
+		UpdatePosition();
+
+	}
+
 
 	public void CancelOrder()
 	{
@@ -93,12 +139,13 @@ public class UnitController : MonoBehaviour
 		if (previousDestination != Vector3.negativeInfinity)
 		{
 			groupManager.removeFromGroup(previousDestination, this.gameObject);
-		} 
-		Group group = groupManager.addToGroup(dest, this.gameObject);
-		flocking.targetReached = false; 
-		flocking.group = group;
+		}
+		group = groupManager.addToGroup(dest, this.gameObject);
+		flockingBehaviour.targetReached = false;
+		flockingBehaviour.group = group;
+		navmeshPathfinding.group = group;
+		navmeshPathfinding.agent.avoidancePriority = (isGroupLeader) ? flockingBehaviour.flockingAsset.leaderPriority : flockingBehaviour.flockingAsset.priority;
 	}
-
 
 
 	public void SetSelected(bool isSelected)
@@ -158,7 +205,8 @@ public class UnitController : MonoBehaviour
 			{
 				renderer.material.color = Color.red;
 
-			} else
+			}
+			else
 			{
 				renderer.material.color = unitStats.color;
 
@@ -167,4 +215,16 @@ public class UnitController : MonoBehaviour
 			isGroupLeader = value;
 		}
 	}
+
+	public bool TargetReached()
+	{
+		return (group.target - transform.position).magnitude < unitStats.stoppingDistance;
+	}
+
+	public bool IsNearLeader()
+	{
+		return (group.leader.transform.position - transform.position).magnitude < flockingBehaviour.flockingAsset.leaderRadius;
+
+	}
+
 }

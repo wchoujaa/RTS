@@ -30,6 +30,26 @@ public class FlockingBehaviour : MonoBehaviour
 		StartCoroutine(FlockingUpdate());
 	}
 
+	void Update()
+	{
+		if (group == null)
+		{
+			desiredDirection = Vector3.zero;
+		}
+		else
+		{
+			if (uController.IsGroupLeader)
+			{
+				desiredDirection *= flockingAsset.leaderFlocking;
+			}
+			else
+			{
+				desiredDirection *= flockingAsset.flocking;
+			}
+		}
+
+	}
+
 
 	IEnumerator FlockingUpdate()
 	{
@@ -37,80 +57,25 @@ public class FlockingBehaviour : MonoBehaviour
 		{
 			if (group != null)
 			{
- 				desiredDirection = BoidCohesion();
+				desiredDirection = BoidCohesion();
 				desiredDirection += BoidSeparation();
 				desiredDirection += Arrive();
 
-				desiredDirection = desiredDirection.normalized * flockingAsset.multiplier;
-
-
-
-
-				if (TargetReached())
-				{
-					if (uController.isGroupLeader)
-					{
-						group.TargetReached = true;
-					}
-					if (group.TargetReached)
-					{
-						navmeshAgent.SetDestination(transform.position);
-					}
-				}
-
-
-
-				if (uController.IsGroupLeader)
-				{
-					navmeshAgent.nextPosition += desiredDirection * flockingAsset.leaderFlocking;
-
-				}
-				else
-				{
-					navmeshAgent.nextPosition += desiredDirection * flockingAsset.flocking;
-
-				}
-
+				desiredDirection *= flockingAsset.multiplier * Time.deltaTime;
 
 				// Use for Debugging
-				targetReached = TargetReached();
-				nearLeader = IsNearLeader();
-
-
-
+				targetReached = uController.TargetReached();
+				nearLeader = uController.IsNearLeader();
+				navmeshAgent.radius = flockingAsset.desiredseparation;
 			}
+
 			yield return new WaitForSeconds(flockingAsset.updateRate);
 
 		}
-
-
-
 	}
 
-	private void Rotate()
-	{
 
-		// Determine which direction to rotate towards
 
-		// The step size is equal to speed times frame time.
-		float singleStep = uController.unitStats.rotationSpeed * Time.deltaTime;
-
-		// Rotate the forward vector towards the target direction by one step
-		Vector3 newDirection = Vector3.RotateTowards(transform.forward, group.orientation, singleStep, 0.0f);
-
-		// Draw a ray pointing at our target in
-		Debug.DrawRay(transform.position, newDirection, Color.red);
-
-		// Calculate a rotation a step closer to the target and applies rotation to this object
-		transform.rotation = Quaternion.LookRotation(newDirection);
-
-	}
-
-	private bool IsNearLeader()
-	{
-		return (group.leader.transform.position - transform.position).magnitude < flockingAsset.maxFlockingRadius;
-
-	}
 
 	private IEnumerator DelayTargetNotification()
 	{
@@ -120,11 +85,7 @@ public class FlockingBehaviour : MonoBehaviour
 		navmeshAgent.SetDestination(transform.position);
 	}
 
-	private bool TargetReached()
-	{
-		return (group.target - transform.position).magnitude < flockingAsset.targetRadius;
-	}
-
+ 
 
 	// Start is called before the first frame update
 
@@ -215,7 +176,7 @@ public class FlockingBehaviour : MonoBehaviour
 		float distance = direction.magnitude;
 		float targetSpeed;
 
-		if (distance < flockingAsset.targetRadius) //if we are far away, do nothing
+		if (distance < uController.unitStats.stoppingDistance) //if we are far away, do nothing
 		{
 			return steering;
 		}
@@ -248,7 +209,7 @@ public class FlockingBehaviour : MonoBehaviour
 
 		Vector3 steering = new Vector3();
 
-		if (!TargetReached()) return steering;
+		if (!uController.TargetReached()) return steering;
 
 		Vector3 direction = group.target - transform.position;
 

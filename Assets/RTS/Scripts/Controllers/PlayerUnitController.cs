@@ -6,8 +6,10 @@ using UnityEngine;
 public class PlayerUnitController : UnitController
 {
 
-	private void Update()
+	override public void Update()
 	{
+		base.Update();
+
 		if (Input.GetKey(KeyCode.X))
 		{
 			CancelOrder();

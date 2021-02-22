@@ -17,8 +17,8 @@ MonoBehaviour:
   attackSpeed: 1
   health: 100
   rotationSpeed: 1
-  maxSpeed: 15
+  maxSpeed: 40
   maxAccel: 100
   maxAngularSpeed: 500
-  stoppingDistance: 1.5
+  stoppingDistance: 1.1
   color: {r: 0.9339623, g: 0.8416314, b: 0, a: 0}

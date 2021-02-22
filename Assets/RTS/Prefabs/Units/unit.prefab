@@ -118,6 +118,7 @@ MonoBehaviour:
   unitStats: {fileID: 11400000, guid: df08b019578e9c646b32fcc6817c93fb, type: 2}
   targetAcquired: 0
   isGroupLeader: 0
+  targetReached: 0
   state: 0
 --- !u!114 &4444562789355198641
 MonoBehaviour:
@@ -143,7 +144,7 @@ NavMeshAgent:
   m_GameObject: {fileID: 4444562789355198643}
   m_Enabled: 1
   m_AgentTypeID: 0
-  m_Radius: 1.1
+  m_Radius: 1
   m_Speed: 11
   m_Acceleration: 8
   avoidancePriority: 50
@@ -155,7 +156,7 @@ NavMeshAgent:
   m_Height: 1
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 3
+  m_ObstacleAvoidanceType: 1
 --- !u!114 &9206211961783754822
 MonoBehaviour:
   m_ObjectHideFlags: 0

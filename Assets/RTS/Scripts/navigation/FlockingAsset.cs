@@ -5,7 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "AI/Flocking")]
 public class FlockingAsset : ScriptableObject
 {
-	public float maxFlockingRadius = 20f;
+	public float leaderRadius = 20f;
 
 	[Header("Cohesion")]
 
@@ -19,7 +19,7 @@ public class FlockingAsset : ScriptableObject
 
 
 	[Header("Arrive")]
-	public float targetRadius = 5.0f;
+ 
 	public float slowRadius = 15.0f;
 	public float timeToTarget = 0.1f;
 
@@ -34,11 +34,14 @@ public class FlockingAsset : ScriptableObject
 	[Range(0.00001f, 1f)]
 	public float leaderFlocking = .1f;
 
-	[Range(0.00001f, 3f)]
+ 
 
-	public float maxSpeedOverflow = 1.1f;
+	public float lerpSpeed = 1.1f;
 
 	public float multiplier = 1.1f;
-	[Range(0.1f, 3f)]
+	[Range(0.1f, 1f)]
 	public float updateRate = 1f;
+
+	public int leaderPriority = 30;
+	public int priority = 50;
 }
