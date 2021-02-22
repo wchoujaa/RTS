@@ -12,9 +12,15 @@ public class GroupManager : MonoBehaviour
 	public Dictionary<Vector3, Group> groupTable = new Dictionary<Vector3, Group>();
 	float lookdistance = 50.0f;
 	public int groupCount = 0;
+	public List<string> allTargets = new List<string>();
 	private void Update()
 	{
+		allTargets.Clear();
 		groupCount = groupTable.Count;
+		foreach (KeyValuePair<Vector3, Group> attachStat in groupTable)
+		{ 
+			allTargets.Add(attachStat.Key.ToString());
+		}
 	}
 
 	public Group AddToGroup(Vector3 target, List<GameObject> members)
@@ -37,16 +43,15 @@ public class GroupManager : MonoBehaviour
 
 
 	//remove gameobject from movement groups
-	public void removeFromGroup(Vector3 target, GameObject member)
+	public Group removeFromGroup(Vector3 target, GameObject member)
 	{
+ 
 		if (groupTable.ContainsKey(target)) //check if a list for our target exists
 		{
 			Group group = groupTable[target];
 
-
 			if (group.containsMember(member)) //if we are in this group
 			{
-				member.GetComponent<UnitController>().IsGroupLeader = false;
 
 				group.removeMember(member); //remove us and return
 
@@ -56,10 +61,13 @@ public class GroupManager : MonoBehaviour
 
 				}
 
-				return;
+				return group;
 
 			}
 		}
+
+		return null;
+
 	}
 
 

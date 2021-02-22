@@ -50,15 +50,15 @@ public class NavmeshPathfinding : MonoBehaviour
 		return agent.path.corners;
 	}
 
-	public void SetDestination(Vector3 target)
+	public void SetDestination(Vector3 dest)
 	{
-		this.destination = target;
+		this.destination = dest;
 
 		agent.speed = speed;
 		agent.acceleration = unitController.unitStats.maxAccel;
 		agent.angularSpeed = unitController.unitStats.maxAngularSpeed;
 		agent.stoppingDistance = unitController.unitStats.stoppingDistance;
-		agent.SetDestination(target);
+		agent.SetDestination(dest);
 	}
 
 

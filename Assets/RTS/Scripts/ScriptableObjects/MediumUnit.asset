@@ -18,14 +18,14 @@ MonoBehaviour:
   slowRadius: 10
   timeToTarget: 0.1
   cohesion: 1
-  separation: 3.45
+  separation: 75.18
   alignement: 0
   arrive: 0
   targetReachedNotifyTime: 1
   flocking: 1
   leaderFlocking: 1
-  lerpSpeed: 10
-  multiplier: 300
+  lerpSpeed: 50
+  multiplier: 100
   updateRate: 0.1
-  leaderPriority: 31
+  leaderPriority: 41
   priority: 50

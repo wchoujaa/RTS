@@ -21,6 +21,7 @@ public class UnitController : MonoBehaviour
 	private GroupManager groupManager;
 	public Group group;
 	public bool targetReached = false;
+	private Vector3 previousDestination = Vector3.negativeInfinity;
 	public enum State
 	{
 		IDLE,
@@ -91,7 +92,7 @@ public class UnitController : MonoBehaviour
 			{
 				if (IsNearLeader() && group.TargetReached)
 				{
-					Vector3 destination =  transform.position;
+					Vector3 destination = transform.position;
 					destination = Vector3.Lerp(destination, destination + flockingBehaviour.desiredDirection, Time.deltaTime * flockingBehaviour.flockingAsset.lerpSpeed);
 					navmeshPathfinding.SetDestination(destination);
 				}
@@ -119,19 +120,24 @@ public class UnitController : MonoBehaviour
 
 	public void MoveUnit(Vector3 dest)
 	{
-		Vector3 previousDestination = navmeshPathfinding.destination;
-		state = State.MOVING;
-		navmeshPathfinding.SetDestination(dest);
+
 
 		if (previousDestination != Vector3.negativeInfinity)
 		{
-			groupManager.removeFromGroup(previousDestination, this.gameObject);
+			
+			Group g = groupManager.removeFromGroup(previousDestination, this.gameObject);
+ 
 		}
 		group = groupManager.addToGroup(dest, this.gameObject);
+
+		state = State.MOVING;
+		navmeshPathfinding.SetDestination(dest);
 		flockingBehaviour.targetReached = false;
 		flockingBehaviour.group = group;
 		navmeshPathfinding.group = group;
 		navmeshPathfinding.agent.avoidancePriority = (isGroupLeader) ? flockingBehaviour.flockingAsset.leaderPriority : flockingBehaviour.flockingAsset.priority;
+		previousDestination = dest;
+
 	}
 
 
