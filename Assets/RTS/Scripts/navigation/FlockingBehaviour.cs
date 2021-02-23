@@ -28,7 +28,7 @@ public class FlockingBehaviour : MonoBehaviour
 		navmeshAgent = GetComponent<NavMeshAgent>();
 		uController = GetComponent<UnitController>();
 		StartCoroutine(FlockingUpdate());
-	}
+ 	}
 
 	void Update()
 	{
@@ -76,14 +76,7 @@ public class FlockingBehaviour : MonoBehaviour
 
 
 
-	private IEnumerator DelayTargetNotification()
-	{
-
-		yield return new WaitForSeconds(flockingAsset.targetReachedNotifyTime);
-		targetReached = true;
-		navmeshAgent.SetDestination(transform.position);
-	}
-
+ 
 
 
 	// Start is called before the first frame update
@@ -161,7 +154,7 @@ public class FlockingBehaviour : MonoBehaviour
 			//steering.linear /= (float)count;
 		}
 
-		return steering * flockingAsset.separation;
+		return steering * group.separationValue;
 	}
 
 

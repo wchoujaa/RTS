@@ -681,7 +681,7 @@ PrefabInstance:
     - target: {fileID: 6462294833702865382, guid: 9141059db88cb0743a6cb453b12a29d6,
         type: 3}
       propertyPath: lastTab
-      value: 2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6462294833702865382, guid: 9141059db88cb0743a6cb453b12a29d6,
         type: 3}
@@ -712,6 +712,11 @@ PrefabInstance:
         type: 3}
       propertyPath: scrollWheelZoomingSensitivity
       value: -125
+      objectReference: {fileID: 0}
+    - target: {fileID: 6462294833702865382, guid: 9141059db88cb0743a6cb453b12a29d6,
+        type: 3}
+      propertyPath: useKeyboardZooming
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6462294833702865383, guid: 9141059db88cb0743a6cb453b12a29d6,
         type: 3}

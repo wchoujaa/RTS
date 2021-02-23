@@ -13,6 +13,9 @@ public class Group
 
 	public Vector3 target;
 	public Vector3 orientation;
+	public float leaderRadius;
+	public float separationValue;
+
 	public bool TargetReached { get; internal set; }
 
 	//add a new member to the group

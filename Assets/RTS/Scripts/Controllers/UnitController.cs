@@ -22,6 +22,13 @@ public class UnitController : MonoBehaviour
 	public Group group;
 	public bool targetReached = false;
 	private Vector3 previousDestination = Vector3.negativeInfinity;
+
+	float ButtonCooler = 0.5f; // Half a second before reset
+	int ButtonCount = 0;
+	private DoubleClicker doubleT = new DoubleClicker(KeyCode.T);
+	private DoubleClicker doubleE = new DoubleClicker(KeyCode.E);
+	private bool isSelected = false;
+
 	public enum State
 	{
 		IDLE,
@@ -61,18 +68,46 @@ public class UnitController : MonoBehaviour
 			}
 		}
 
-
+		handleInput();
 
 		transform.position = navmeshPathfinding.agent.nextPosition;
 
+	}
+
+	private void handleInput()
+	{
+
+
+		if(isSelected && isGroupLeader)
+		{
+			if (doubleE.DoubleClickLongPressedCheak())
+			{
+				SpreadUnit(-flockingBehaviour.flockingAsset.spreadAmount);
+
+			}
+			else if (Input.GetKey(doubleE.key))
+			{
+				SpreadUnit(flockingBehaviour.flockingAsset.spreadAmount);
+			}
+		}
+
 
 	}
+
+
+	private void SpreadUnit(float amount)
+	{
+		group.separationValue = Mathf.Clamp(group.separationValue + amount, 2f, 100);
+		group.leaderRadius = Mathf.Clamp(group.leaderRadius + amount * 1.5f, 10f, 70f);
+	}
+
+
 	private void OnDrawGizmos()
 	{
 
 		if (isGroupLeader)
 		{
-			Gizmos.DrawSphere(transform.position, flockingBehaviour.flockingAsset.leaderRadius);
+			Gizmos.DrawSphere(transform.position, group.leaderRadius);
 		}
 	}
 	private void UpdatePosition()
@@ -85,6 +120,7 @@ public class UnitController : MonoBehaviour
 		{
 			if (isGroupLeader)
 			{
+				navmeshPathfinding.agent.speed = unitStats.maxSpeed * flockingBehaviour.flockingAsset.leaderSpeedFactor / 100f;
 				if (TargetReached())
 					group.TargetReached = true;
 			}
@@ -124,11 +160,13 @@ public class UnitController : MonoBehaviour
 
 		if (previousDestination != Vector3.negativeInfinity)
 		{
-			
+
 			Group g = groupManager.removeFromGroup(previousDestination, this.gameObject);
- 
+
 		}
 		group = groupManager.addToGroup(dest, this.gameObject);
+		group.leaderRadius = flockingBehaviour.flockingAsset.leaderRadius;
+		group.separationValue = flockingBehaviour.flockingAsset.separation;
 
 		state = State.MOVING;
 		navmeshPathfinding.SetDestination(dest);
@@ -179,6 +217,7 @@ public class UnitController : MonoBehaviour
 
 	public void SetSelected(bool isSelected)
 	{
+		this.isSelected = isSelected;
 		selectUI.SetActive(isSelected);
 	}
 
@@ -252,8 +291,112 @@ public class UnitController : MonoBehaviour
 
 	public bool IsNearLeader()
 	{
-		return (group.leader.transform.position - transform.position).magnitude < flockingBehaviour.flockingAsset.leaderRadius;
+		return (group.leader.transform.position - transform.position).magnitude < group.leaderRadius;
 
 	}
+
+
+	public class DoubleClicker
+	{
+		/// <summary>
+		/// Construcor with keycode and deltaTime set
+		/// </summary>
+		public DoubleClicker(KeyCode key, float deltaTime)
+		{
+			//set key
+			this._key = key;
+
+			//set deltaTime
+			this._deltaTime = deltaTime;
+		}
+
+		/// <summary>
+		/// Construcor with defult deltatime 
+		/// </summary>
+		public DoubleClicker(KeyCode key)
+		{
+			//set key
+			this._key = key;
+		}
+
+		private KeyCode _key;
+		private float _deltaTime = defultDeltaTime;
+
+		//defult deltaTime
+		public const float defultDeltaTime = 0.21f;
+		public bool doubleTapped = false;
+		/// <summary>
+		/// Current key property
+		/// </summary>
+		public KeyCode key
+		{
+			get { return _key; }
+		}
+
+		/// <summary>
+		/// Current deltaTime property
+		/// </summary>
+		public float deltaTime
+		{
+			get { return _deltaTime; }
+		}
+
+		public void Reset()
+		{
+			doubleTapped = false;
+		}
+
+		//time pass
+		private float timePass = 0;
+		/// <summary>
+		/// Cheak for double press
+		/// </summary>
+		/// 
+		//public bool DoubleClickCheak()
+		//{
+		//	if (timePass > 0) { timePass -= Time.deltaTime; }
+
+		//	if (Input.GetKeyDown(_key))
+		//	{
+		//		if (timePass > 0) { timePass = 0; return true; }
+
+		//		timePass = _deltaTime;
+		//	}
+
+		//	return false;
+		//}
+
+
+
+
+		public bool DoubleClickLongPressedCheak()
+		{
+			if (timePass > 0)
+			{
+				timePass -= Time.deltaTime;
+			}
+
+			if (Input.GetKeyDown(_key))
+			{
+				if (timePass > 0)
+				{
+					doubleTapped = true;
+					timePass = 0;
+				}
+				else
+				{
+					timePass = _deltaTime;
+				}
+
+			}
+			if (doubleTapped && Input.GetKeyUp(_key))
+			{
+				doubleTapped = false;
+			}
+
+			return doubleTapped;
+		}
+	}
+
 
 }

@@ -25,7 +25,7 @@ public class FlockingAsset : ScriptableObject
 
 	[Header("weights")]
 	public float cohesion = 1f;
-	public float separation = 1f;
+	public float separation = 10f;
 	public float alignement = 1f;
 	public float arrive = 1f;
 	public float targetReachedNotifyTime = 1f;
@@ -44,4 +44,8 @@ public class FlockingAsset : ScriptableObject
 
 	public int leaderPriority = 30;
 	public int priority = 50;
+	public float spreadAmount = 1f;
+ 
+	[Range(0.1f, 100f)] 
+	public float leaderSpeedFactor = 80f;
 }
