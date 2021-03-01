@@ -6,11 +6,17 @@ unity version : 2020.1.11f1
 # Features
 
 > waypoint and pathfinding on navmesh 
-![](https://user-images.githubusercontent.com/23583291/109525503-dec22e80-7ab1-11eb-9bd1-354466b4f505.mp4)
-
+ 
+https://user-images.githubusercontent.com/23583291/109525763-2648ba80-7ab2-11eb-8959-d8550904cff2.mp4
 
 > unit spreading
- ![](https://user-images.githubusercontent.com/23583291/109525508-e08bf200-7ab1-11eb-9cb6-bf1c5ae52814.mp4)
+> 
+https://user-images.githubusercontent.com/23583291/109525917-4d06f100-7ab2-11eb-827d-30b0e757255e.mp4
+
+
+
+ 
+
  
 
 # Credits 
