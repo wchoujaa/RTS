@@ -88,6 +88,10 @@ public class PlayerUnitController : UnitController
 		{
 			navMeshBehaviour.AddWaypoint(point);
 		}
+		if (navMeshBehaviour.TargetReached())
+		{
+			navMeshBehaviour.SetDestination(point);
+		}
 	}
 
 
