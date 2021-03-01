@@ -85,7 +85,7 @@ public class GroupManager : MonoBehaviour
 
 				if (group.isEmpty()) //if this movement group is now empty
 				{
-					groupTable.Remove(target);
+					ClearGroup(target);
 
 				}
 
@@ -95,6 +95,23 @@ public class GroupManager : MonoBehaviour
 		}
 
 		return null;
+
+	}
+
+
+
+	private void ClearGroup(Vector3 target)
+	{
+		Group group = groupTable[target];
+
+		foreach (GameObject obj in group.waypointsObj)
+		{
+			Destroy(obj);
+		}
+		group.waypointsObj.Clear();
+		group.waypoints.Clear();
+
+		groupTable.Remove(target);
 
 	}
 

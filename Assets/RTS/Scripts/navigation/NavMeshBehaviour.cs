@@ -72,20 +72,29 @@ public class NavMeshBehaviour : MonoBehaviour
 	{
 		if (GetGroup() != null && TargetReached())
 		{
-			NextWaypoint();
+			//Debug.Log(currentWP + " " + GetGroup().waypoints.Count);
+			if(currentWP >= GetGroup().waypoints.Count - 1)  
+			{
+				ClearWaypoints();
+
+			} else
+			{
+				NextWaypoint();
+
+			}
 		}
 	}
 
 
 	public void SetDestination(Vector3 dest)
 	{
+		
 		agent.speed = agentStats.maxSpeed;
 		agent.acceleration = agentStats.maxAccel;
 		agent.angularSpeed = agentStats.maxAngularSpeed;
 		agent.stoppingDistance = agentStats.stoppingDistance;
 		agent.avoidancePriority = uController.IsGroupLeader ? agentStats.leaderPriority : agentStats.priority;
 		agent.SetDestination(dest);
-
 	}
 
 
@@ -111,17 +120,14 @@ public class NavMeshBehaviour : MonoBehaviour
 
 	private void NextWaypoint()
 	{
-
-		if (currentWP == GetGroup().waypoints.Count - 1) return; // skip the last waypoint
-
-		if (uController.IsGroupLeader)
+		Debug.Log(currentWP);
+		if (uController.IsGroupLeader  )
 		{
-			currentWP++;
+			currentWP++; 
 			Vector3 next = GetGroup().waypoints[currentWP];
 			GameObject previous = GetGroup().waypointsObj[currentWP - 1];
 			GetGroup().target = next;
 			GetGroup().TargetReached = false;
-
 			Destroy(previous);
 		}
 
@@ -147,9 +153,20 @@ public class NavMeshBehaviour : MonoBehaviour
 	public void AddWaypoint(Vector3 point)
 	{
 		GameObject obj = Instantiate(waypointPrefab, point, Quaternion.identity, null);
-		GetGroup().waypoints.Add(obj.transform.position);
-		GetGroup().waypointsObj.Add(obj);
+		LineRenderer lineRenderer = obj.GetComponent<LineRenderer>();
 
+		Group group = GetGroup();
+
+		group.waypoints.Add(obj.transform.position);
+		group.waypointsObj.Add(obj);
+
+		if(group.waypoints.Count > 1)
+		{
+			Vector3 last = group.waypoints[group.waypoints.Count - 2];
+			lineRenderer.SetPosition(1, last);
+			lineRenderer.SetPosition(0, obj.transform.position);
+
+		} 
 	}
 
 
