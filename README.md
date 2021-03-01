@@ -7,8 +7,11 @@ unity version : 2020.1.11f1
 
 > waypoint and pathfinding on navmesh 
  
+![](Media/rts1.mp4)
+
 > unit spreading
  
+![](Media/rts2.mp4)
 
 # Credits 
 
