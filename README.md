@@ -9,7 +9,7 @@ unity version : 2020.1.11f1
 
 ![](Media/rts1.gif)
 
-> unit spreading
+> unit spreading (E to spread - double E to shrink)
 
 ![](Media/rts2.gif)
 
