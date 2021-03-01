@@ -1,14 +1,16 @@
+using Assets.RTS.Scripts.Combat;
+using Assets.RTS.Scripts.ScriptableObjects;
 using GNB;
 using System.Collections;
 using System.Collections.Generic;
 using Turrets;
- 
+
 using UnityEngine;
 public class TurretShooting : MonoBehaviour
 {
 
- 
-	public UnitStats unitStats;
+
+	public CombatStats combatStat;
 	public TurretRotation turretRotation;
 	public List<Gun> guns;
 	public float velocity;
@@ -16,23 +18,26 @@ public class TurretShooting : MonoBehaviour
 	[Range(1, 1000)]
 	public float Rate;
 	private PlayerUnitController unitController;
+	private CombatBehaviour combatBehaviour;
+
+
 	private void Start()
 	{
-		 
+		combatBehaviour = GetComponent<CombatBehaviour>();
 		unitController = GetComponentInParent<PlayerUnitController>();
 	}
 
 	private void Update()
 	{
-		if (unitController.targetAcquired)
+		if (combatBehaviour.targetAcquired)
 		{
 
 			turretRotation.SetIdle(false);
 
-			var currentTarget = unitController.target;
+			var currentTarget = combatBehaviour.target;
 			var distance = (transform.position - currentTarget.position).magnitude;
 
-			if (distance <= unitStats.attackRange)
+			if (distance <= combatStat.attackRange)
 			{
 				turretRotation.SetAimpoint(currentTarget.position);
 
@@ -54,7 +59,7 @@ public class TurretShooting : MonoBehaviour
 	{
 		isFiring = true;
 
-		foreach(Gun gun in guns)
+		foreach (Gun gun in guns)
 		{
 			if (gun.ReadyToFire)
 			{
@@ -63,7 +68,7 @@ public class TurretShooting : MonoBehaviour
 			}
 		}
 
-		yield return new WaitForSeconds(1/Rate);
+		yield return new WaitForSeconds(1 / Rate);
 
 		isFiring = false;
 		yield return null;

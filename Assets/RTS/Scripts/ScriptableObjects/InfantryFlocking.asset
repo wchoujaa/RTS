@@ -10,24 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1e16d1624cfa084f83d866b7b24b007, type: 3}
-  m_Name: MediumUnit
+  m_Name: InfantryFlocking
   m_EditorClassIdentifier: 
   leaderRadius: 10.17
   neighbordist: 50
   desiredseparation: 50
-  slowRadius: 10
-  timeToTarget: 0.1
   cohesion: 1
-  separation: 2.58
-  alignement: 1.17
-  arrive: 0
-  targetReachedNotifyTime: 1
-  flocking: 1
-  leaderFlocking: 1
-  lerpSpeed: 70
+  separation: 1
+  lerpSpeed: 30
   multiplier: 100
   updateRate: 0.1
-  leaderPriority: 45
-  priority: 50
-  spreadAmount: 1
-  leaderSpeedFactor: 76
+  spreadAmount: 0.7
+  leaderSpeedFactor: 61.6

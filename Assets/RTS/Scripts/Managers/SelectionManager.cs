@@ -1,3 +1,5 @@
+using Assets.RTS.Scripts.Controllers;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,10 +8,16 @@ public class SelectionManager : MonoBehaviour
 {
 
 	RaycastHit hit;
-	public List<UnitController> selectedUnits = new List<UnitController>();
+	public List<PlayerUnitController> selectedUnits = new List<PlayerUnitController>();
 	bool isDragging = false;
 	Vector3 mousePositon;
+ 
 
+ 
+
+	private void Start()
+	{
+	}
 
 	private void OnGUI()
 	{
@@ -41,13 +49,10 @@ public class SelectionManager : MonoBehaviour
 				//Debug.Log(hit.transform.tag);
 				if (hit.transform.CompareTag("PlayerUnit"))
 				{
-					SelectUnit(hit.transform.GetComponent<UnitController>(), Input.GetKey(KeyCode.LeftShift));
+					SelectUnit(hit.transform.GetComponent<PlayerUnitController>(), Input.GetKey(KeyCode.LeftShift));
 					isDragging = false;
-
 				}
-
 			}
-
 		}
 
 		if (Input.GetMouseButtonUp(0))
@@ -59,11 +64,12 @@ public class SelectionManager : MonoBehaviour
 				{
 					if (IsWithinSelectionBounds(selectableObject.transform))
 					{
-						SelectUnit(selectableObject.gameObject.GetComponent<UnitController>(), true);
+						SelectUnit(selectableObject.gameObject.GetComponent<PlayerUnitController>(), true);
 					}
 				}
 
 				isDragging = false;
+
 			}
 
 		}
@@ -83,17 +89,22 @@ public class SelectionManager : MonoBehaviour
 				{
 					foreach (var selectableObj in selectedUnits)
 					{
-						selectableObj.MoveUnit(hit.point);
+						if (Input.GetKey(KeyCode.LeftShift))
+						{
+							selectableObj.AddWaypoint(hit.point); 
+						}
+						else
+						{
+							selectableObj.MoveUnit(hit.point);
+						}
 					}
-
-
 
 				}
 				else if (hit.transform.CompareTag("EnemyUnit"))
 				{
 					foreach (var selectableObj in selectedUnits)
 					{
-						selectableObj.SetNewTarget(hit.transform);
+						selectableObj.UpdateTarget(hit.transform);
 
 					}
 				}
@@ -102,7 +113,9 @@ public class SelectionManager : MonoBehaviour
 
 	}
 
-	private void SelectUnit(UnitController unit, bool isMultiSelect = false)
+ 
+
+	private void SelectUnit(PlayerUnitController unit, bool isMultiSelect = false)
 	{
 		if (!isMultiSelect)
 		{
@@ -114,13 +127,18 @@ public class SelectionManager : MonoBehaviour
 
 	private void DeselectUnits()
 	{
+
+
 		for (int i = 0; i < selectedUnits.Count; i++)
 		{
-			// selectedUnits[i].Find("Highlight").gameObject.SetActive(false);
-			selectedUnits[i].SetSelected(false);
+ 			selectedUnits[i].SetSelected(false);
 		}
 		selectedUnits.Clear();
 	}
+
+
+
+ 
 
 	private bool IsWithinSelectionBounds(Transform transform)
 	{

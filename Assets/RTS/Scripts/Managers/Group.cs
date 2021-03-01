@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Assets.RTS.Scripts.Controllers;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,7 +16,8 @@ public class Group
 	public Vector3 orientation;
 	public float leaderRadius;
 	public float separationValue;
-
+	public List<Vector3> waypoints = new List<Vector3>();
+	public List<GameObject> waypointsObj = new List<GameObject>();
 	public bool TargetReached { get; internal set; }
 
 	//add a new member to the group
@@ -25,27 +27,30 @@ public class Group
 	public Group(Vector3 target)
 	{
 		this.target = target;
+
+
 	}
 
 
 	public void addMember(GameObject member)
 	{
+
 		if (leader == null) //if there is no leader
 		{
 			leader = member;
 			//set leader flag
-			member.GetComponent<UnitController>().IsGroupLeader = true;  
+			member.GetComponent<UnitController>().IsGroupLeader = true;
 			orientation = target - member.transform.position;
 			orientation.y = 0f;
 		}
 
-		if (member.GetComponent<UnitController>().unitStats.maxSpeed < maxSpeed) //check who the slowest member of the movement group is
+		if (member.GetComponent<NavMeshBehaviour>().agentStats.maxSpeed < maxSpeed) //check who the slowest member of the movement group is
 		{
-			maxSpeed = member.GetComponent<UnitController>().unitStats.maxSpeed; //set everyone to match the slowest member's pace
+			maxSpeed = member.GetComponent<NavMeshBehaviour>().agentStats.maxSpeed; //set everyone to match the slowest member's pace
 		}
 
 		members.Add(member);
- 		TargetReached = false;
+		TargetReached = false;
 	}
 
 	//remove a unit from the group and assign a new leader if the previous leader is removed
@@ -74,8 +79,6 @@ public class Group
 		{
 			members.Remove(member);
 		}
-
-		member.GetComponent<NavmeshPathfinding>().speed = member.GetComponent<UnitController>().unitStats.maxSpeed;
 	}
 
 	public bool containsMember(GameObject member)

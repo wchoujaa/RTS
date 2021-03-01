@@ -17,7 +17,7 @@ MonoBehaviour:
   attackSpeed: 1
   health: 100
   rotationSpeed: 1
-  maxSpeed: 20
+  maxSpeed: 30
   maxAccel: 100
   maxAngularSpeed: 500
   stoppingDistance: 1.1
