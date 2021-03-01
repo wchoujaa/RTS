@@ -3,6 +3,12 @@ An attempt at a fast paced RTS game build with UNITY
 
 unity version : 2020.1.11f1 
 
+# Features
+
+> waypoint and pathfinding on navmesh 
+ 
+> unit spreading
+ 
 
 # Credits 
 
