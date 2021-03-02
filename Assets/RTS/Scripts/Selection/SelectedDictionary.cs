@@ -10,13 +10,14 @@ public class SelectedDictionary : MonoBehaviour
 
 	public void AddSelected(GameObject go)
 	{
-
+		//Debug.Log(go.name);
 		int id = go.GetInstanceID();
 
 		if (!(selectedTable.ContainsKey(id)))
 		{
 			selectedTable.TryAdd(id, go);
-			go.GetComponent<UnitController>().SetSelected(true);
+			if(go.GetComponent<UnitController>() != null)
+				go.GetComponent<UnitController>().SetSelected(true);
 		}
 	}
 
@@ -37,10 +38,11 @@ public class SelectedDictionary : MonoBehaviour
 	public void Deselect(int id)
 	{
 
-		GameObject obj = selectedTable[id];
-		obj.GetComponent<UnitController>().SetSelected(false);
-
-		selectedTable.TryRemove(id, out obj);
+		GameObject go = selectedTable[id];
+		if (go.GetComponent<UnitController>() != null)
+			go.GetComponent<UnitController>().SetSelected(false);
+ 
+		selectedTable.TryRemove(id, out go);
 	}
 
 	public void DeselectAll()

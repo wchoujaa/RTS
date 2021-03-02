@@ -21,4 +21,4 @@ MonoBehaviour:
   multiplier: 100
   updateRate: 0.1
   spreadAmount: 0.7
-  leaderSpeedFactor: 61.6
+  leaderSpeedFactor: 100

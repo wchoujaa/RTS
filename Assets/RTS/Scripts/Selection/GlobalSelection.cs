@@ -37,6 +37,7 @@ namespace Assets.RTS.Scripts.Selection
 		public LayerMask unit;
 		public string playerUnitTag;
 		private bool addWaypoint = false;
+		public bool debug = false;
 
 		void Start()
 		{
@@ -141,10 +142,12 @@ namespace Assets.RTS.Scripts.Selection
 					bool hitted = false;
 					foreach (Vector2 corner in corners)
 					{
+						var dist = 50000.0f;
 						Ray ray = Camera.main.ScreenPointToRay(corner); //cast out to world space
-
-						if (Physics.Raycast(ray, out hit, 50000.0f, ground)) ///if we hit something
+																		//Debug.DrawLine(ray.origin, ray.origin + ray.direction * dist, Color.green, 1.5f);
+						if (Physics.Raycast(ray, out hit, dist, ground)) ///if we hit something
 						{
+							//Debug.Log(hit.transform.name);
 							verts[i] = new Vector3(hit.point.x, hit.point.y, hit.point.z);
 
 							Debug.DrawLine(Camera.main.ScreenToWorldPoint(corner), hit.point, Color.red, 1.0f);
@@ -169,7 +172,9 @@ namespace Assets.RTS.Scripts.Selection
 						}
 
 						//destroy our slection box after 1/50th of a second
-						Destroy(selectionBox, 0.02f);
+						var waitime = (debug) ? 2.5f : 0.02f;
+						Destroy(selectionBox, waitime);
+
 					}
 
 
@@ -186,12 +191,12 @@ namespace Assets.RTS.Scripts.Selection
 			{
 				if (isWaypoint && addWaypoint)
 				{
-					selected.GetComponent<PlayerUnitController>().AddWaypoint(target.transform.position);
+					selected.GetComponent<UnitController>().AddWaypoint(target.transform.position);
 
 				}
 				else
 				{
-					selected.GetComponent<PlayerUnitController>().MoveUnit(target.transform.position);
+					selected.GetComponent<UnitController>().MoveUnit(target.transform.position);
 
 				}
 			}
@@ -207,7 +212,7 @@ namespace Assets.RTS.Scripts.Selection
 			if (other.gameObject.tag == playerUnitTag)
 			{
 
-				UnitController obj = other.gameObject.GetComponentInParent<PlayerUnitController>();
+				UnitController obj = other.gameObject.GetComponentInParent<UnitController>();
 
 				selectedTable.AddSelected(obj.gameObject);
 			}
@@ -288,12 +293,12 @@ namespace Assets.RTS.Scripts.Selection
 
 			for (int i = 0; i < 4; i++) //pass in the bottom vertices
 			{
-				verts[i] = corners[i];
+				verts[i] = corners[i] - Vector3.up * 100.0f;
 			}
 
 			for (int j = 4; j < 8; j++) // pass in the top vertices
 			{
-				verts[j] = (corners[j - 4] + Vector3.up * 100.0f);
+				verts[j] = corners[j - 4] + Vector3.up * 100.0f;
 			}
 
 			Mesh selectionMesh = new Mesh

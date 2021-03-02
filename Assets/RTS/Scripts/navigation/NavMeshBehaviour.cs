@@ -120,7 +120,7 @@ public class NavMeshBehaviour : MonoBehaviour
 
 	private void NextWaypoint()
 	{
-		Debug.Log(currentWP);
+		//Debug.Log(currentWP);
 		if (uController.IsGroupLeader  )
 		{
 			currentWP++; 
