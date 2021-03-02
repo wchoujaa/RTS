@@ -13,7 +13,7 @@ namespace Assets.RTS.Scripts.Controllers
 
 		public Vector3 destination = Vector3.negativeInfinity;
 
-		protected Animator animator; 
+		protected Animator animator;
 		protected NavMeshBehaviour navMeshBehaviour;
 		protected FlockingBehaviour flockingBehaviour;
 		protected CombatBehaviour combatBehaviour;
@@ -27,7 +27,7 @@ namespace Assets.RTS.Scripts.Controllers
 		public bool isGroupLeader = false;
 		public Group group;
 		public Renderer colorRenderer;
-
+		private Color baseColor;
 
 
 		virtual protected void Start()
@@ -37,7 +37,7 @@ namespace Assets.RTS.Scripts.Controllers
 			flockingBehaviour = GetComponent<FlockingBehaviour>();
 			combatBehaviour = GetComponent<CombatBehaviour>();
 			animator = GetComponentInChildren<Animator>();
-			colorRenderer.material.color = unitStats.color;
+			baseColor = colorRenderer.material.color;
 			groupManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GroupManager>();
 
 		}
@@ -85,6 +85,7 @@ namespace Assets.RTS.Scripts.Controllers
 
 		public void MoveUnit(Vector3 dest)
 		{
+
 			navMeshBehaviour.ClearWaypoints();
 			SetGroup(dest);
 			navMeshBehaviour.SetDestination(dest);
@@ -125,12 +126,12 @@ namespace Assets.RTS.Scripts.Controllers
 				}
 				else
 				{
-					colorRenderer.material.color = unitStats.color;
+					colorRenderer.material.color = baseColor;
 
 				}
 
 				isGroupLeader = value;
 			}
-		} 
+		}
 	}
 }

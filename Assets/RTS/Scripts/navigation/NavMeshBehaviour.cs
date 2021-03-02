@@ -125,6 +125,10 @@ public class NavMeshBehaviour : MonoBehaviour
 		{
 			currentWP++; 
 			Vector3 next = GetGroup().waypoints[currentWP];
+			GameObject nextWaypoint = GetGroup().waypointsObj[currentWP];
+			nextWaypoint.GetComponent<LineRenderer>().SetPosition(1, nextWaypoint.transform.position);
+			 
+
 			GameObject previous = GetGroup().waypointsObj[currentWP - 1];
 			GetGroup().target = next;
 			GetGroup().TargetReached = false;
@@ -164,8 +168,7 @@ public class NavMeshBehaviour : MonoBehaviour
 		{
 			Vector3 last = group.waypoints[group.waypoints.Count - 2];
 			lineRenderer.SetPosition(1, last);
-			lineRenderer.SetPosition(0, obj.transform.position);
-
+			lineRenderer.SetPosition(0, obj.transform.position); 
 		} 
 	}
 
