@@ -52,7 +52,12 @@ namespace Assets.RTS.Scripts.Controllers
 		virtual public void SetSelected(bool isSelected)
 		{
 			this.isSelected = isSelected;
-			selectUI.SetActive(isSelected);
+			//selectUI.SetActive(isSelected);
+
+			Color color = colorRenderer.material.GetColor("_OutlineColor");
+			color.a = (isSelected) ? 1f: 0f;
+			colorRenderer.material.SetColor("_OutlineColor", color);
+			//Debug.Log(colorRenderer.material.GetColor("_OutlineColor"));
 		}
 
 		public void UpdateTarget(Transform enemy)

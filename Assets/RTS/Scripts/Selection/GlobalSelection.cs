@@ -77,7 +77,7 @@ namespace Assets.RTS.Scripts.Selection
 
 				if (target != null)
 				{
-					Debug.Log(target.transform.position);
+					//Debug.Log(target.transform.position);
 					SelectionSetTarget(target, Input.GetKey(KeyCode.LeftShift));
 				}
 			}
