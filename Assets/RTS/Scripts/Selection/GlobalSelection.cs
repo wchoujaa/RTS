@@ -11,7 +11,7 @@ namespace Assets.RTS.Scripts.Selection
 
 		public GameObject target;
 
-		SelectedDictionary selected_table;
+		SelectedDictionary selectedTable;
 		RaycastHit hit;
 
 		bool dragSelect; //marquee selection flag
@@ -36,10 +36,11 @@ namespace Assets.RTS.Scripts.Selection
 		public LayerMask ground;
 		public LayerMask unit;
 		public string playerUnitTag;
+		private bool addWaypoint = false;
 
 		void Start()
 		{
-			selected_table = gameObject.GetComponent<SelectedDictionary>();
+			selectedTable = gameObject.GetComponent<SelectedDictionary>();
 			dragSelect = false;
 		}
 
@@ -47,12 +48,18 @@ namespace Assets.RTS.Scripts.Selection
 		void Update()
 		{
 
+			if (Input.GetKeyUp(KeyCode.LeftShift))
+			{
+				addWaypoint = false;
+			}
+
 			//0. when right mouse button clicked
 			if (Input.GetMouseButtonDown(1))
 			{
+
 				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); //raycast from previous mouse pointer position
 
-				if (Physics.Raycast(ray, out hit, 50000.0f, unit << ground)) //if we hit a unit
+				if (Physics.Raycast(ray, out hit, 50000.0f, unit)) //if we hit a unit
 				{
 					//Debug.Log("clicked on a unit");
 					target = hit.transform.gameObject;
@@ -69,13 +76,9 @@ namespace Assets.RTS.Scripts.Selection
 
 				if (target != null)
 				{
-					 
-						SelectionSetTarget(target, Input.GetKey(KeyCode.LeftShift));
-
-					 
+					SelectionSetTarget(target, Input.GetKey(KeyCode.LeftShift));
 				}
 			}
-
 
 			// 1. when left mouse button clicked
 			if (Input.GetMouseButtonDown(0))
@@ -100,18 +103,18 @@ namespace Assets.RTS.Scripts.Selection
 				{
 					Ray ray = Camera.main.ScreenPointToRay(p1); //raycast from previous mouse pointer position
 
-					if (Physics.Raycast(ray, out hit, 50000.0f, (int)(~(ground)))) ///if we hit something that isn't ground
+					if (Physics.Raycast(ray, out hit, 50000.0f, unit)) ///if we hit something that isn't ground
 					{
 						if (Input.GetKey(KeyCode.LeftShift))
 						{
 							//Debug.Log("Inclusive Select");
-							selected_table.AddSelected(hit.transform.gameObject);
+							selectedTable.AddSelected(hit.transform.gameObject);
 						}
 						else
 						{
 							//Debug.Log("Exclusive Select");
-							selected_table.DeselectAll();
-							selected_table.AddSelected(hit.transform.gameObject);
+							selectedTable.DeselectAll();
+							selectedTable.AddSelected(hit.transform.gameObject);
 
 						}
 					}
@@ -123,7 +126,7 @@ namespace Assets.RTS.Scripts.Selection
 						}
 						else
 						{
-							selected_table.DeselectAll();
+							selectedTable.DeselectAll();
 						}
 					}
 
@@ -162,7 +165,7 @@ namespace Assets.RTS.Scripts.Selection
 
 						if (!Input.GetKey(KeyCode.LeftShift))
 						{
-							selected_table.DeselectAll();
+							selectedTable.DeselectAll();
 						}
 
 						//destroy our slection box after 1/50th of a second
@@ -179,18 +182,22 @@ namespace Assets.RTS.Scripts.Selection
 
 		private void SelectionSetTarget(GameObject target, bool isWaypoint)
 		{
-			foreach (GameObject selected in selected_table.getSelection())
+			foreach (GameObject selected in selectedTable.getSelection())
 			{
-				if (isWaypoint)
+				if (isWaypoint && addWaypoint)
 				{
 					selected.GetComponent<PlayerUnitController>().AddWaypoint(target.transform.position);
 
-				} else
+				}
+				else
 				{
 					selected.GetComponent<PlayerUnitController>().MoveUnit(target.transform.position);
 
 				}
 			}
+
+			addWaypoint = isWaypoint;
+
 		}
 
 		//check collisions with our dynamically created box collider
@@ -202,7 +209,7 @@ namespace Assets.RTS.Scripts.Selection
 
 				UnitController obj = other.gameObject.GetComponentInParent<PlayerUnitController>();
 
-				selected_table.AddSelected(obj.gameObject);
+				selectedTable.AddSelected(obj.gameObject);
 			}
 		}
 
