@@ -24,7 +24,7 @@ public class PlayerUnitController : UnitController
 	{
 		base.Update();
 
-		if (Input.GetKeyUp(KeyCode.X))
+		if (Input.GetKeyUp(KeyCode.S))
 		{
 			CancelOrder();
 		}
@@ -63,8 +63,8 @@ public class PlayerUnitController : UnitController
 
 	public void CancelOrder()
 	{
-		combatBehaviour.Cancel();
-
+		//combatBehaviour.Cancel();
+		MoveUnit(transform.position, transform.position);
 	}
  }
 	 

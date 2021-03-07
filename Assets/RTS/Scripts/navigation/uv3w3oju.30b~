@@ -42,12 +42,12 @@ public class NavMeshBehaviour : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-		if (TargetReached()  &&  IsNearLeader())
+		if (TargetReached() || IsNearLeader())
 		{
 			//Debug.Log(currentWP + " " + waypoints.Count);
 			if (currentWP >= waypoints.Count - 1)
 			{
-				ClearWaypoints();
+				//ClearWaypoints();
 			}
 			else
 			{
@@ -201,7 +201,7 @@ public class NavMeshBehaviour : MonoBehaviour
 	public bool IsNearLeader()
 	{
 		if (GetGroup() == null) return false;
-		if (uController.isGroupLeader) return true;
+
 		return !uController.IsGroupLeader && (GetGroup().leader.transform.position - transform.position).magnitude < GetGroup().leaderRadius;
 
 	}

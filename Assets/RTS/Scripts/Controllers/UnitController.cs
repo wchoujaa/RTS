@@ -1,6 +1,7 @@
 using Assets.RTS.Scripts.Combat;
 using Assets.RTS.Scripts.navigation;
 using Assets.RTS.Scripts.ScriptableObjects;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -28,6 +29,7 @@ namespace Assets.RTS.Scripts.Controllers
 		public Group group;
 		public Renderer colorRenderer;
 		private Color baseColor;
+		public UnitType unitType;
 
 
 		virtual protected void Start()
@@ -39,7 +41,7 @@ namespace Assets.RTS.Scripts.Controllers
 			animator = GetComponentInChildren<Animator>();
 			baseColor = colorRenderer.material.color;
 			groupManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GroupManager>();
-
+			unitType = unitStats.unitType;
 		}
 
 		virtual protected void Update()
@@ -60,6 +62,11 @@ namespace Assets.RTS.Scripts.Controllers
 			//Debug.Log(colorRenderer.material.GetColor("_OutlineColor"));
 		}
 
+		public float GetRadius()
+		{
+			return navMeshBehaviour.agent.radius;
+		}
+
 		public void UpdateTarget(Transform enemy)
 		{
 			combatBehaviour.SetNewTarget(enemy);
@@ -69,32 +76,31 @@ namespace Assets.RTS.Scripts.Controllers
 
 
 
-		public void AddWaypoint(Vector3 point)
+		public void AddWaypoint(Vector3 dest, Vector3 position)
 		{
 
 			if (group == null)
 			{
-				MoveUnit(point);
+				MoveUnit(dest, position);
 			}
-			if (IsGroupLeader)
-			{
-				navMeshBehaviour.AddWaypoint(point);
-			}
+
+			navMeshBehaviour.AddWaypoint(position);
+			
 			if (navMeshBehaviour.TargetReached())
 			{
-				navMeshBehaviour.SetDestination(point);
+				navMeshBehaviour.SetDestination(position);
 			}
 		}
 
 
 
-		public void MoveUnit(Vector3 dest)
+		public void MoveUnit(Vector3 dest, Vector3 position)
 		{
 
 			navMeshBehaviour.ClearWaypoints();
 			SetGroup(dest);
-			navMeshBehaviour.SetDestination(dest);
-			navMeshBehaviour.AddWaypoint(dest);
+			navMeshBehaviour.SetDestination(position);
+			navMeshBehaviour.AddWaypoint(position);
 			previousDestination = dest;
 		}
 
@@ -138,5 +144,8 @@ namespace Assets.RTS.Scripts.Controllers
 				isGroupLeader = value;
 			}
 		}
+
+		public float Radius { get => this.navMeshBehaviour.agent.radius; }
+		
 	}
 }

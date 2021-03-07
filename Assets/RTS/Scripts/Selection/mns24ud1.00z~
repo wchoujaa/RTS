@@ -8,7 +8,7 @@ namespace Assets.RTS.Scripts.Selection
 {
 	public class GlobalSelection : MonoBehaviour
 	{
-		private SelectionGraph selectionGraph;
+		private SelectionGraph graph;
 		public GameObject target;
 
 		SelectedDictionary selectedTable;
@@ -41,7 +41,7 @@ namespace Assets.RTS.Scripts.Selection
 
 		void Start()
 		{
-			selectionGraph = GetComponentInChildren<SelectionGraph>();
+			graph = GetComponentInChildren<SelectionGraph>();
 			selectedTable = gameObject.GetComponent<SelectedDictionary>();
 			dragSelect = false;
 		}
@@ -111,17 +111,16 @@ namespace Assets.RTS.Scripts.Selection
 
 					if (Physics.Raycast(ray, out hit, 50000.0f, unit)) ///if we hit something that isn't ground
 					{
-						UnitController unitController = hit.transform.gameObject.GetComponent<UnitController>();
 						if (Input.GetKey(KeyCode.LeftShift))
 						{
 							//Debug.Log("Inclusive Select");
-							selectedTable.AddSelected(unitController);
+							selectedTable.AddSelected(hit.transform.gameObject);
 						}
 						else
 						{
 							//Debug.Log("Exclusive Select");
 							selectedTable.DeselectAll();
-							selectedTable.AddSelected(unitController);
+							selectedTable.AddSelected(hit.transform.gameObject);
 
 						}
 					}
@@ -134,7 +133,6 @@ namespace Assets.RTS.Scripts.Selection
 						else
 						{
 							selectedTable.DeselectAll();
-							selectionGraph.Clear();
 						}
 					}
 
@@ -204,37 +202,28 @@ namespace Assets.RTS.Scripts.Selection
 
 				if (Physics.Raycast(ray, out hit, 50000.0f, ground)) //if we hit ground
 				{
-					selectionGraph.transform.position = hit.point + Vector3.up * 2f;
-					selectionGraph.Reset(selectedTable.getSelection());
-				}
+
+					graph.transform.position = hit.point;
+
+				} 
 			}
 		}
 
 		private void SelectionSetTarget(GameObject target, bool isWaypoint)
 		{
-			List<UnitController> selection = selectedTable.getSelection();
-			List<GraphNode> graph = selectionGraph.Graph;
-			for (int i = 0; i < selection.Count; i++)
+			foreach (GameObject selected in selectedTable.getSelection())
 			{
-
-				//UnitController selected = selection[i];
-
-				GraphNode node = graph[i];
-
-
 				if (isWaypoint && addWaypoint)
 				{
-					node.unitController.AddWaypoint(target.transform.position, node.transform.position);
-					//selected.AddWaypoint(target.transform.position, node.transform.position);
+					selected.GetComponent<UnitController>().AddWaypoint(target.transform.position);
+
 				}
 				else
 				{
-					node.unitController.MoveUnit(target.transform.position, node.transform.position);
-					//selected.MoveUnit(target.transform.position, node.transform.position);
-				}
+					selected.GetComponent<UnitController>().MoveUnit(target.transform.position);
 
+				}
 			}
- 
 
 			addWaypoint = isWaypoint;
 
@@ -249,7 +238,7 @@ namespace Assets.RTS.Scripts.Selection
 
 				UnitController obj = other.gameObject.GetComponentInParent<UnitController>();
 
-				selectedTable.AddSelected(obj);
+				selectedTable.AddSelected(obj.gameObject);
 			}
 		}
 

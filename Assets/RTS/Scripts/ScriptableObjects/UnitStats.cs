@@ -8,5 +8,6 @@ namespace Assets.RTS.Scripts.ScriptableObjects
 	public class UnitStats : ScriptableObject
 	{
 		public Color color;
+		public UnitType unitType;
 	}
 }
