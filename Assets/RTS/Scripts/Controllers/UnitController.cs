@@ -30,7 +30,7 @@ namespace Assets.RTS.Scripts.Controllers
 		public Renderer colorRenderer;
 		private Color baseColor;
 		public UnitType unitType;
-
+		public int team = 0;
 
 		virtual protected void Start()
 		{

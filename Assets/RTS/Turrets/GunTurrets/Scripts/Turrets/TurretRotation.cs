@@ -1,3 +1,4 @@
+using Assets.RTS.Scripts.Combat;
 using UnityEngine;
 
 namespace Turrets
@@ -42,7 +43,7 @@ namespace Turrets
 		public bool aiming = false;
 		public bool atRest = false;
 		public bool isInLineOfSight = false;
-		public float range = 1000;
+ 
 
 		Ray shootRay;                                   // A ray from the gun end forwards.
 		RaycastHit shootHit;                            // A raycast hit to get information about what was hit.
@@ -58,9 +59,12 @@ namespace Turrets
 		public bool AtRest { get { return atRest; } }
 
 
+		private CombatBehaviour combatBehaviour;
+
 		private void Start()
 		{
-			if (aiming == false)
+			combatBehaviour = GetComponentInParent<CombatBehaviour>();
+ 			if (aiming == false)
 				aimPoint = transform.TransformPoint(Vector3.forward * 100.0f);
 		}
 
@@ -221,16 +225,16 @@ namespace Turrets
 			shootRay.direction = turretBarrels.forward;
 
 			// Perform the raycast against gameobjects on the shootable layer and if it hits something...
-			if (Physics.Raycast(shootRay, out shootHit, range))
+			if (Physics.Raycast(shootRay, out shootHit, combatBehaviour.combatStats.range, combatBehaviour.unit))
 			{
-				string tag = shootHit.transform.gameObject.tag;
+				CombatBehaviour unit = shootHit.transform.gameObject.GetComponent<CombatBehaviour>();
 
-				if (tag == "EnemyUnit")
+				if (combatBehaviour.IsEnemy(unit))
 				{
 					isInLineOfSight = true;
 				}
 			}
- 
+
 			return isInLineOfSight;
 		}
 
@@ -269,13 +273,13 @@ namespace Turrets
 
 			if (turretBarrels != null)
 			{
-				Debug.DrawRay(shootRay.origin, shootRay.direction * 10.0f);
-				Debug.DrawRay(turretBarrels.position, turretBarrels.forward * 100.0f);
+				Debug.DrawRay(shootRay.origin, shootRay.direction * combatBehaviour.combatStats.range);
+				Debug.DrawRay(turretBarrels.position, turretBarrels.forward * combatBehaviour.combatStats.range);
 
 			}
 
 			else if (turretBase != null)
-				Debug.DrawRay(turretBase.position, turretBase.forward * 100.0f);
+				Debug.DrawRay(turretBase.position, turretBase.forward * combatBehaviour.combatStats.range);
 		}
 	}
 }

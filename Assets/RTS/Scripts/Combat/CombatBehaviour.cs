@@ -15,17 +15,20 @@ namespace Assets.RTS.Scripts.Combat
 		public Transform target;
 		private float attackTimer;
 		public bool targetAcquired;
-
- 		private int health;
-
+		private UnitController unitController;
+		private int health;
+		public LayerMask unit;
+		private bool takingDamage = false;
 		// Start is called before the first frame update
 
 
 		void Start()
 		{
- 
-			attackTimer = combatStats.attackRate;
+
+			attackTimer = combatStats.rate;
 			health = combatStats.health;
+			unitController = GetComponent<UnitController>();
+ 
 		}
 
 		private void Update()
@@ -33,15 +36,36 @@ namespace Assets.RTS.Scripts.Combat
 			attackTimer += Time.deltaTime;
 
 			if (target != null)
-			{
-				var distance = (transform.position - target.position).magnitude;
-
-				if (distance <= combatStats.attackRange)
-				{
-					Attack();
-				}
+			{ 
+				Attack();
 			}
 		}
+
+
+		private void FixedUpdate()
+		{
+			AcquireTarget();
+		}
+
+		private void AcquireTarget()
+		{
+			Collider[] hitColliders = Physics.OverlapSphere(transform.position, combatStats.range, unit);
+			var distance = Mathf.Infinity;
+			Cancel();
+			foreach (var hitCollider in hitColliders)
+			{
+				var target = hitCollider.GetComponent<UnitController>();
+				var newDist = (transform.position - target.transform.position).magnitude;
+				if (target.team != unitController.team && newDist < distance)
+				{
+					SetNewTarget(hitCollider.transform);
+					distance = newDist;
+				}
+			} 
+		}
+
+
+
 
 		public void StopShooting()
 		{
@@ -50,37 +74,36 @@ namespace Assets.RTS.Scripts.Combat
 
 		public void Attack()
 		{
-			if (attackTimer >= combatStats.attackRate)
-			{
-				CombatBehaviour targetBehaviour = target.GetComponent<CombatBehaviour>();
+			//if (attackTimer >= combatStats.rate)
+			//{
+			//	CombatBehaviour targetBehaviour = target.GetComponent<CombatBehaviour>();
 
-				targetBehaviour.TakeDamage(this);
-				attackTimer = 0;
-			}
+			//	targetBehaviour.TakeDamage(this);
+			//	attackTimer = 0;
+			//}
 
 		}
 
 		public void SetNewTarget(Transform enemy)
 		{
-
 			target = enemy;
 			Vector3 position = target.position;
 			Vector3 aimTarget = new Vector3();
 			aimTarget.Set(position.x, position.y, position.z);
 			targetAcquired = true;
-
-
 		}
 
 		public void TakeDamage(CombatBehaviour enemy)
 		{
-			health -= enemy.combatStats.attackDamage;
-			StartCoroutine(Flasher(GetComponent<Renderer>().material.color));
+			health -= enemy.combatStats.damage;
+			if(!takingDamage)
+				StartCoroutine(Flasher(unitController.colorRenderer.material.color));
 		}
 
 		IEnumerator Flasher(Color defaultColor)
 		{
-			var renderer = GetComponent<Renderer>();
+			takingDamage = true;
+			var renderer = unitController.colorRenderer;
 			for (int i = 0; i < 2; i++)
 			{
 				renderer.material.color = Color.gray;
@@ -88,12 +111,19 @@ namespace Assets.RTS.Scripts.Combat
 				renderer.material.color = defaultColor;
 				yield return new WaitForSeconds(.05f);
 			}
+			takingDamage = false;
 		}
 
 		public void Cancel()
 		{
 			targetAcquired = false;
 			target = null;
+			
+		}
+
+		public bool IsEnemy(CombatBehaviour unit)
+		{
+			return this.unitController.team != unit.unitController.team;
 		}
 	}
 }

@@ -64,7 +64,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1095406984}
   - component: {fileID: 1095406985}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Graph
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,16 +97,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a615aa1787ea115488e3550ba3075685, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  n: 38
   rand: 3
   distance: 0
   spring: 1e+17
   radius: 1
   mass: 10
-  gravity: -119.76
+  gravity: 0
   resistance: 1
   startSpread: 10
   dampingRatio: 14.07
+  center: {x: 0, y: 0, z: 0}
+  ground:
+    serializedVersion: 2
+    m_Bits: 1024
 --- !u!1 &1916159519976378
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,7 +163,6 @@ MonoBehaviour:
   debug: 1
   allTargets: []
   firstMembers: []
-  firstWaypoints: []
   firstWaypointsObj: []
 --- !u!114 &1567413560
 MonoBehaviour:

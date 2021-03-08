@@ -112,18 +112,22 @@ namespace Assets.RTS.Scripts.Selection
 					if (Physics.Raycast(ray, out hit, 50000.0f, unit)) ///if we hit something that isn't ground
 					{
 						UnitController unitController = hit.transform.gameObject.GetComponent<UnitController>();
-						if (Input.GetKey(KeyCode.LeftShift))
+						if (unitController.tag == playerUnitTag)
 						{
-							//Debug.Log("Inclusive Select");
-							selectedTable.AddSelected(unitController);
-						}
-						else
-						{
-							//Debug.Log("Exclusive Select");
-							selectedTable.DeselectAll();
-							selectedTable.AddSelected(unitController);
+							if (Input.GetKey(KeyCode.LeftShift))
+							{
+								//Debug.Log("Inclusive Select");
+								selectedTable.AddSelected(unitController);
+							}
+							else
+							{
+								//Debug.Log("Exclusive Select");
+								selectedTable.DeselectAll();
+								selectedTable.AddSelected(unitController);
 
+							}
 						}
+
 					}
 					else //if we didn't hit something
 					{
@@ -234,7 +238,7 @@ namespace Assets.RTS.Scripts.Selection
 				}
 
 			}
- 
+
 
 			addWaypoint = isWaypoint;
 

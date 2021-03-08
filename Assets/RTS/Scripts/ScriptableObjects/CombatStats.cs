@@ -6,9 +6,9 @@ namespace Assets.RTS.Scripts.Combat
 
 	public class CombatStats : ScriptableObject
 	{
-		public int attackDamage;
+		public int damage;
 		public int health;
-		public float attackRange;
-		public float attackRate;
+		public float range;
+		public float rate;
 	}
 }
