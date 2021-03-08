@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 0
   health: 100
-  range: 140.4
+  range: 200
   rate: 3
