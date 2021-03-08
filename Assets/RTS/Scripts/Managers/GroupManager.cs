@@ -15,7 +15,7 @@ public class GroupManager : MonoBehaviour
 	public bool debug = true;
 	public List<string> allTargets = new List<string>();
 	public List<GameObject> firstMembers = new List<GameObject>();
-	public List<Vector3> firstWaypoints = new List<Vector3>();
+	//public List<Vector3> firstWaypoints = new List<Vector3>();
 	public List<GameObject> firstWaypointsObj = new List<GameObject>();
 
 
@@ -41,7 +41,7 @@ public class GroupManager : MonoBehaviour
 			Vector3 first = (Vector3)enumerator.Current;
 			Group g = groupTable[first];
 			firstMembers = g.members;
-			firstWaypoints = g.waypoints;
+			//firstWaypoints = g.waypoints;
 			firstWaypointsObj = g.waypointsObj;
 
 		}
@@ -109,7 +109,7 @@ public class GroupManager : MonoBehaviour
 			Destroy(obj);
 		}
 		group.waypointsObj.Clear();
-		group.waypoints.Clear();
+		//group.waypoints.Clear();
 
 		groupTable.Remove(target);
 

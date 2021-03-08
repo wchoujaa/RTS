@@ -16,7 +16,7 @@ public class Group
 	public Vector3 orientation;
 	public float leaderRadius;
 	public float separationValue;
-	public List<Vector3> waypoints = new List<Vector3>();
+	//public List<Vector3> waypoints = new List<Vector3>();
 	public List<GameObject> waypointsObj = new List<GameObject>();
 	public bool TargetReached { get; internal set; }
 

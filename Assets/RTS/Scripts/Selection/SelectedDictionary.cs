@@ -1,4 +1,5 @@
 ﻿using Assets.RTS.Scripts.Controllers;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -6,28 +7,28 @@ using UnityEngine;
 
 public class SelectedDictionary : MonoBehaviour
 {
-	public ConcurrentDictionary<int, GameObject> selectedTable = new ConcurrentDictionary<int, GameObject>();
+	public ConcurrentDictionary<int, UnitController> selectedTable = new ConcurrentDictionary<int, UnitController>();
 
-	public void AddSelected(GameObject go)
+	public void AddSelected(UnitController go)
 	{
-
+		//Debug.Log(go.name);
 		int id = go.GetInstanceID();
 
 		if (!(selectedTable.ContainsKey(id)))
 		{
 			selectedTable.TryAdd(id, go);
-			go.GetComponent<UnitController>().SetSelected(true);
+			 
+			 go.GetComponent<UnitController>().SetSelected(true);
 		}
 	}
 
-	public List<GameObject> getSelection()
+	public List<UnitController> getSelection()
 	{
-		List<GameObject> selection = new List<GameObject>();
+		List<UnitController> selection = new List<UnitController>();
 		var enumerator = selectedTable.GetEnumerator();
 		while (enumerator.MoveNext())
 		{
-			selection.Add(enumerator.Current.Value);
-
+			selection.Add(enumerator.Current.Value); 
 		}
 
 		return selection;
@@ -37,10 +38,11 @@ public class SelectedDictionary : MonoBehaviour
 	public void Deselect(int id)
 	{
 
-		GameObject obj = selectedTable[id];
-		obj.GetComponent<UnitController>().SetSelected(false);
-
-		selectedTable.TryRemove(id, out obj);
+		UnitController go = selectedTable[id];
+		if (go.GetComponent<UnitController>() != null)
+			go.GetComponent<UnitController>().SetSelected(false);
+ 
+		selectedTable.TryRemove(id, out go);
 	}
 
 	public void DeselectAll()
@@ -48,12 +50,19 @@ public class SelectedDictionary : MonoBehaviour
 
 
 		var enumerator = selectedTable.GetEnumerator();
+
 		while (enumerator.MoveNext())
 		{
-			Deselect(enumerator.Current.Key);
-
+			Deselect(enumerator.Current.Key); 
 		}
 
 		selectedTable.Clear();
 	}
+
+	public bool IsEmpty()
+	{
+		return selectedTable.IsEmpty;
+	}
+
+	public int Count => selectedTable.Count;
 }

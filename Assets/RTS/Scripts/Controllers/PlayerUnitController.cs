@@ -24,7 +24,7 @@ public class PlayerUnitController : UnitController
 	{
 		base.Update();
 
-		if (Input.GetKeyUp(KeyCode.X))
+		if (Input.GetKeyUp(KeyCode.S))
 		{
 			CancelOrder();
 		}
@@ -63,67 +63,8 @@ public class PlayerUnitController : UnitController
 
 	public void CancelOrder()
 	{
-		combatBehaviour.Cancel();
-
+		//combatBehaviour.Cancel();
+		MoveUnit(transform.position, transform.position);
 	}
-
-
-	override public void SetSelected(bool isSelected)
-	{
-		base.SetSelected(isSelected);
-		if (!isSelected && IsGroupLeader)
-		{
-
-		}
-	}
-
-	public void AddWaypoint(Vector3 point)
-	{
-
-		if (group == null)
-		{
-			MoveUnit(point);
-		}
-		if (IsGroupLeader)
-		{
-			navMeshBehaviour.AddWaypoint(point);
-		}
-		if (navMeshBehaviour.TargetReached())
-		{
-			navMeshBehaviour.SetDestination(point);
-		}
-	}
-
-
-
-	public void MoveUnit(Vector3 dest)
-	{
-		navMeshBehaviour.ClearWaypoints();
-		SetGroup(dest);
-		navMeshBehaviour.SetDestination(dest);
-		navMeshBehaviour.AddWaypoint(dest);
-		previousDestination = dest;
-	}
-
-
-	private void SetGroup(Vector3 dest)
-	{
-		Group previousGroup = groupManager.removeFromGroup(previousDestination, gameObject);
-
-		if (previousGroup != null)
-		{
-			group = groupManager.addToGroup(dest, gameObject);
-			group.leaderRadius = previousGroup.leaderRadius;
-			group.separationValue = previousGroup.separationValue;
-
-		}
-		else
-		{
-			group = groupManager.addToGroup(dest, gameObject);
-			group.leaderRadius = flockingBehaviour.flockingStats.leaderRadius;
-			group.separationValue = flockingBehaviour.flockingStats.separation;
-		}
-	}
-}
-
-
+ }
+	 

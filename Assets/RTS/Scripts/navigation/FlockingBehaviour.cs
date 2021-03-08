@@ -136,7 +136,7 @@ namespace Assets.RTS.Scripts.navigation
 		{
 			if (uController && uController.IsGroupLeader)
 			{
-				Gizmos.DrawSphere(transform.position, uController.group.leaderRadius);
+				//Gizmos.DrawSphere(transform.position, uController.group.leaderRadius);
 			}
 		}
 	}

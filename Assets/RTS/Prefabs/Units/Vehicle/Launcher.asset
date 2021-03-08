@@ -12,13 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d184ebd1d6f68f74e9077079c945ede7, type: 3}
   m_Name: Launcher
   m_EditorClassIdentifier: 
-  attackDamage: 0
-  attackRange: 1000
-  attackSpeed: 1
-  health: 100
-  rotationSpeed: 1
-  maxSpeed: 30
-  maxAccel: 100
-  maxAngularSpeed: 500
-  stoppingDistance: 1.1
-  color: {r: 0.9339623, g: 0.8416314, b: 0, a: 0}
+  color: {r: 0.25178, g: 0.3680237, b: 0.7735849, a: 0}
+  unitType: 0

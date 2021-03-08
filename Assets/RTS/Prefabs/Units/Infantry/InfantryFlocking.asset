@@ -12,13 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1e16d1624cfa084f83d866b7b24b007, type: 3}
   m_Name: InfantryFlocking
   m_EditorClassIdentifier: 
-  leaderRadius: 10.17
+  leaderRadius: 49.39
   neighbordist: 50
   desiredseparation: 50
   cohesion: 1
   separation: 1
-  lerpSpeed: 30
-  multiplier: 100
+  lerpSpeed: 10
+  multiplier: 5
   updateRate: 0.1
   spreadAmount: 0.7
-  leaderSpeedFactor: 61.6
+  leaderSpeedFactor: 100

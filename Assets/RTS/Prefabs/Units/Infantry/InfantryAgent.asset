@@ -9,11 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d184ebd1d6f68f74e9077079c945ede7, type: 3}
-  m_Name: WarriorStats 1
+  m_Script: {fileID: 11500000, guid: 1b2621462525ce249b0a9803c8b85795, type: 3}
+  m_Name: InfantryAgent
   m_EditorClassIdentifier: 
-  attackDamage: 0
-  attackRange: 1000
-  attackSpeed: 10
-  health: 100
-  rotationSpeed: 8.58
+  maxSpeed: 30
+  maxAccel: 100
+  maxAngularSpeed: 500
+  stoppingDistance: 1.1
+  leaderPriority: 43
+  priority: 50
