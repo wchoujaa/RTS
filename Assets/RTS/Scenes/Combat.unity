@@ -2653,10 +2653,25 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 6462294833702865376, guid: 9141059db88cb0743a6cb453b12a29d6,
+        type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 6462294833702865376, guid: 9141059db88cb0743a6cb453b12a29d6,
+        type: 3}
+      propertyPath: orthographic
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6462294833702865378, guid: 9141059db88cb0743a6cb453b12a29d6,
         type: 3}
       propertyPath: m_Name
       value: Main Camera
+      objectReference: {fileID: 0}
+    - target: {fileID: 6462294833702865378, guid: 9141059db88cb0743a6cb453b12a29d6,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6462294833702865383, guid: 9141059db88cb0743a6cb453b12a29d6,
         type: 3}
@@ -4934,7 +4949,7 @@ Terrain:
   m_GameObject: {fileID: 1466200526}
   m_Enabled: 1
   serializedVersion: 6
-  m_TerrainData: {fileID: 15600000, guid: 64efe78743aa6364cb173a9669263a90, type: 2}
+  m_TerrainData: {fileID: 0}
   m_TreeDistance: 5000
   m_TreeBillboardDistance: 50
   m_TreeCrossFadeLength: 5
