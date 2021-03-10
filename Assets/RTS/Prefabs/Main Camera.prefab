@@ -11,8 +11,7 @@ GameObject:
   - component: {fileID: 6462294833702865383}
   - component: {fileID: 6462294833702865376}
   - component: {fileID: 6462294833702865377}
-  - component: {fileID: 6462294833702865382}
-  - component: {fileID: 6462294833702865381}
+  - component: {fileID: 1076417275}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -85,7 +84,7 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6462294833702865378}
   m_Enabled: 1
---- !u!114 &6462294833702865382
+--- !u!114 &1076417275
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,10 +93,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6462294833702865378}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28ef8c68bade09b41aca258d42a632f2, type: 3}
+  m_Script: {fileID: 11500000, guid: f1043f08be9d63c44a7c4c56275880f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lastTab: 0
+  lastTab: 2
+  presetSettingsFoldout: 0
   movementSettingsFoldout: 0
   zoomingSettingsFoldout: 0
   rotationSettingsFoldout: 0
@@ -106,26 +106,31 @@ MonoBehaviour:
   targetingSettingsFoldout: 0
   inputSettingsFoldout: 0
   useFixedUpdate: 0
-  keyboardMovementSpeed: 100
+  RTSCameraDefault: 1
+  UnityEditorStyle: 0
+  ClassicRTSStyle: 0
+  is2d: 0
+  isMobile: 0
+  keyboardMovementSpeed: 5
   screenEdgeMovementSpeed: 3
   followingSpeed: 5
   rotationSped: 3
-  panningSpeed: 200
-  mouseRotationSpeed: 100
+  panningSpeed: 10
+  mouseRotationSpeed: 10
   autoHeight: 1
   groundMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  maxHeight: 1
+  maxHeight: 10
   minHeight: 15
   heightDampening: 5
   keyboardZoomingSensitivity: 2
-  scrollWheelZoomingSensitivity: 125
-  limitMap: 0
+  scrollWheelZoomingSensitivity: 25
+  limitMap: 1
   limitX: 50
   limitY: 50
   targetFollow: {fileID: 0}
-  targetOffset: {x: 7, y: 0, z: -24}
+  targetOffset: {x: 0, y: 0, z: 0}
   useScreenEdgeInput: 1
   screenEdgeBorder: 25
   useKeyboardInput: 1
@@ -143,16 +148,3 @@ MonoBehaviour:
   rotateLeftKey: 122
   useMouseRotation: 1
   mouseRotationKey: 324
---- !u!114 &6462294833702865381
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6462294833702865378}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 20048c13a5d194941bac6cd566a5e468, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetsTag: PlayerUnit

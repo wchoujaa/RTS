@@ -30,7 +30,7 @@ public class LauncherShooting : MonoBehaviour {
 			var currentTarget = combatBehaviour.target;
 			var distance = (transform.position - currentTarget.position).magnitude;
 
-			if (distance <= combatBehaviour.combatStats.attackRange)
+			if (distance <= combatBehaviour.combatStats.range)
 			{
 				turretRotation.SetAimpoint(currentTarget.position);
 

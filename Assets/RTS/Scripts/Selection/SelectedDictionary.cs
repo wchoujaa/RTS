@@ -11,6 +11,7 @@ public class SelectedDictionary : MonoBehaviour
 
 	public void AddSelected(UnitController go)
 	{
+
 		//Debug.Log(go.name);
 		int id = go.GetInstanceID();
 

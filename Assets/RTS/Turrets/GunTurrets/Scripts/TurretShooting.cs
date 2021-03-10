@@ -10,13 +10,12 @@ public class TurretShooting : MonoBehaviour
 {
 
 
-	public CombatStats combatStat;
+	private CombatStats combatStat;
 	public TurretRotation turretRotation;
 	public List<Gun> guns;
 	public float velocity;
 	public bool isFiring = false;
-	[Range(1, 1000)]
-	public float Rate;
+ 
 	private PlayerUnitController unitController;
 	private CombatBehaviour combatBehaviour;
 
@@ -25,6 +24,7 @@ public class TurretShooting : MonoBehaviour
 	{
 		combatBehaviour = GetComponent<CombatBehaviour>();
 		unitController = GetComponentInParent<PlayerUnitController>();
+		combatStat = combatBehaviour.combatStats;
 	}
 
 	private void Update()
@@ -37,15 +37,14 @@ public class TurretShooting : MonoBehaviour
 			var currentTarget = combatBehaviour.target;
 			var distance = (transform.position - currentTarget.position).magnitude;
 
-			if (distance <= combatStat.attackRange)
+			if (distance <= combatStat.range)
 			{
 				turretRotation.SetAimpoint(currentTarget.position);
 
 				if (turretRotation.IsLineOfSight() && !isFiring)
 				{
 					StartCoroutine(FireBullets());
-				}
-
+				} 
 			}
 		}
 		else
@@ -68,7 +67,7 @@ public class TurretShooting : MonoBehaviour
 			}
 		}
 
-		yield return new WaitForSeconds(1 / Rate);
+		yield return new WaitForSeconds( combatBehaviour.combatStats.rate);
 
 		isFiring = false;
 		yield return null;

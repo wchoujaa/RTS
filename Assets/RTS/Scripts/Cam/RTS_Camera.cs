@@ -5,7 +5,7 @@ using UnityStandardAssets.CrossPlatformInput;
 namespace Assets.RTS.Scripts.Cam
 
 {
-	[RequireComponent(typeof(UnityEngine.Camera))]
+
 	[AddComponentMenu("RTS Camera")]
 	public class RTS_Camera : MonoBehaviour
 	{
@@ -63,7 +63,7 @@ namespace Assets.RTS.Scripts.Cam
 		public float keyboardZoomingSensitivity = 2f;
 		public float scrollWheelZoomingSensitivity = 25f;
 
-		private float zoomPos = 0; //value in range (0, 1) used as t in Matf.Lerp
+		private float zoomPos = 1; //value in range (0, 1) used as t in Matf.Lerp
 
 		#endregion
 
@@ -118,6 +118,7 @@ namespace Assets.RTS.Scripts.Cam
 
 		public bool useMouseRotation = true;
 		public KeyCode mouseRotationKey = KeyCode.Mouse1;
+		private Quaternion rotationVector;
 
 		private Vector2 KeyboardInput
 		{
@@ -179,8 +180,9 @@ namespace Assets.RTS.Scripts.Cam
 
 		private void Start()
 		{
+			rotationVector = transform.rotation;
 			m_Transform = transform;
-			m_Camera = GetComponent<UnityEngine.Camera>();
+			m_Camera = GetComponentInChildren<UnityEngine.Camera>();
 		}
 
 		private void Update()
@@ -304,9 +306,13 @@ namespace Assets.RTS.Scripts.Cam
 			if (useKeyboardRotation)
 				transform.Rotate(rotationVector, RotationDirection * Time.deltaTime * rotationSped, Space.World);
 
-
+			//rotationVector *= Quaternion.Euler(Vector3.up * -MouseAxis.x * 1000f);
+			Debug.Log(rotationVector);
 			if (useMouseRotation && Input.GetKey(mouseRotationKey))
+			{
+				//m_Transform.rotation = Quaternion.Lerp(transform.rotation, rotationVector, Time.deltaTime * mouseRotationSpeed);
 				m_Transform.Rotate(rotationVector, -MouseAxis.x * Time.deltaTime * mouseRotationSpeed, Space.World);
+			}
 		}
 
 		/// <summary>
