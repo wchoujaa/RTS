@@ -55,7 +55,7 @@ namespace Assets.RTS.Scripts.Cam
 		#region Height
 
 		public bool autoHeight = true;
-		public LayerMask groundMask = -1; //layermask of ground or other objects that affect height
+		public LayerMask groundMask = 1; //layermask of ground or other objects that affect height
 
 		public float maxHeight = 10f; //maximal height
 		public float minHeight = 15f; //minimnal height
@@ -119,7 +119,14 @@ namespace Assets.RTS.Scripts.Cam
 		public bool useMouseRotation = true;
 		public KeyCode mouseRotationKey = KeyCode.Mouse1;
 		private Quaternion rotationVector;
-
+		private Vector3 zoomDirection;
+		public Vector3 zoomAmount;
+		public float zoomSpeed;
+		public float translateSpeed;
+		public Vector3 velocityZoom = Vector3.one;
+		public Vector3 velocity = Vector3.one;
+		public Vector3 desiredMove = Vector3.zero;
+		public float smoothTime = 2f;
 		private Vector2 KeyboardInput
 		{
 			get { return useKeyboardInput ? new Vector2(CrossPlatformInputManager.GetAxis(horizontalAxis), CrossPlatformInputManager.GetAxis(verticalAxis)) : Vector2.zero; }
@@ -183,6 +190,7 @@ namespace Assets.RTS.Scripts.Cam
 			rotationVector = transform.rotation;
 			m_Transform = transform;
 			m_Camera = GetComponentInChildren<UnityEngine.Camera>();
+			zoomDirection = m_Camera.transform.localPosition;
 		}
 
 		private void Update()
@@ -192,6 +200,12 @@ namespace Assets.RTS.Scripts.Cam
 		}
 
 		private void FixedUpdate()
+		{
+
+		}
+
+
+		private void LateUpdate()
 		{
 			if (useFixedUpdate)
 				CameraUpdate();
@@ -223,47 +237,39 @@ namespace Assets.RTS.Scripts.Cam
 		{
 			if (useKeyboardInput)
 			{
-				var desiredMove = is2d ? new Vector3(KeyboardInput.x, KeyboardInput.y, 0) : new Vector3(KeyboardInput.x, 0, KeyboardInput.y);
-
+				//var desiredMove = is2d ? new Vector3(KeyboardInput.x, KeyboardInput.y, 0) : new Vector3(KeyboardInput.x, 0, KeyboardInput.y);
+				desiredMove = m_Camera.transform.right * KeyboardInput.x + m_Transform.transform.forward * KeyboardInput.y;
 				desiredMove *= keyboardMovementSpeed;
-				desiredMove *= Time.deltaTime;
-				desiredMove = Quaternion.Euler(new Vector3(0f, transform.eulerAngles.y, 0f)) * desiredMove;
-				desiredMove = m_Transform.InverseTransformDirection(desiredMove);
-
-				m_Transform.Translate(desiredMove, Space.Self);
 			}
 
 			if (useScreenEdgeInput)
 			{
-				Vector3 desiredMove = new Vector3();
 
 				Rect leftRect = new Rect(0, 0, screenEdgeBorder, Screen.height);
 				Rect rightRect = new Rect(Screen.width - screenEdgeBorder, 0, screenEdgeBorder, Screen.height);
 				Rect upRect = new Rect(0, Screen.height - screenEdgeBorder, Screen.width, screenEdgeBorder);
 				Rect downRect = new Rect(0, 0, Screen.width, screenEdgeBorder);
 
-				desiredMove.x = leftRect.Contains(MouseInput) ? -1 : rightRect.Contains(MouseInput) ? 1 : 0;
-				desiredMove.z = upRect.Contains(MouseInput) ? 1 : downRect.Contains(MouseInput) ? -1 : 0;
+				//desiredMove.x = leftRect.Contains(MouseInput) ? -1 : rightRect.Contains(MouseInput) ? 1 : 0;
+				//desiredMove.z = upRect.Contains(MouseInput) ? 1 : downRect.Contains(MouseInput) ? -1 : 0;
 
-				desiredMove *= screenEdgeMovementSpeed;
-				desiredMove *= Time.deltaTime;
-				desiredMove = Quaternion.Euler(new Vector3(0f, transform.eulerAngles.y, 0f)) * desiredMove;
-				desiredMove = m_Transform.InverseTransformDirection(desiredMove);
+				//desiredMove *= screenEdgeMovementSpeed;
 
-				m_Transform.Translate(desiredMove, Space.Self);
 			}
 
 			if (usePanning && Input.GetKey(panningKey) && MouseAxis != Vector2.zero)
 			{
-				Vector3 desiredMove = new Vector3(-MouseAxis.x, 0, -MouseAxis.y);
-
+				desiredMove = m_Camera.transform.right * -MouseAxis.x + m_Transform.transform.forward * -MouseAxis.y;
 				desiredMove *= panningSpeed;
-				desiredMove *= Time.deltaTime;
-				desiredMove = Quaternion.Euler(new Vector3(0f, transform.eulerAngles.y, 0f)) * desiredMove;
-				desiredMove = m_Transform.InverseTransformDirection(desiredMove);
-
-				m_Transform.Translate(desiredMove, Space.Self);
 			}
+
+			desiredMove *= translateSpeed;
+			desiredMove *= Time.deltaTime;
+			desiredMove = Quaternion.Euler(new Vector3(0f, transform.eulerAngles.y, 0f)) * desiredMove;
+			desiredMove = m_Transform.InverseTransformDirection(desiredMove);
+			m_Transform.position = Vector3.SmoothDamp(m_Transform.position, m_Transform.position + desiredMove, ref velocity, smoothTime);
+			// m_Transform.Translate(desiredMove, Space.Self);
+
 		}
 
 		/// <summary>
@@ -282,6 +288,8 @@ namespace Assets.RTS.Scripts.Cam
 			float targetHeight = Mathf.Lerp(minHeight, maxHeight, zoomPos);
 			float difference = 0;
 
+
+
 			if (distanceToGround != targetHeight)
 				difference = targetHeight - distanceToGround;
 
@@ -291,9 +299,19 @@ namespace Assets.RTS.Scripts.Cam
 			}
 			else
 			{
-				m_Transform.position = Vector3.Lerp(m_Transform.position,
-					new Vector3(m_Transform.position.x, targetHeight + difference, m_Transform.position.z),
-					Time.deltaTime * heightDampening);
+				if(distanceToGround > minHeight && distanceToGround < maxHeight)
+				{
+ 
+ 
+
+					//Vector3 direction = m_Camera.transform.forward *  (targetHeight + difference);// new Vector3(m_Transform.position.x, targetHeight + difference, m_Transform.position.z);
+					zoomDirection += zoomAmount   * ScrollWheel * Time.deltaTime * scrollWheelZoomingSensitivity;
+
+					//zoomDirection *= distanceToGround;
+
+					//m_Camera.transform.localPosition = Vector3.SmoothDamp(m_Camera.transform.localPosition, zoomDirection, ref velocityZoom, Time.deltaTime * zoomSpeed);
+					m_Camera.transform.localPosition = Vector3.Lerp(m_Camera.transform.localPosition, zoomDirection, Time.deltaTime * heightDampening);
+				} 
 			}
 		}
 
@@ -307,7 +325,7 @@ namespace Assets.RTS.Scripts.Cam
 				transform.Rotate(rotationVector, RotationDirection * Time.deltaTime * rotationSped, Space.World);
 
 			//rotationVector *= Quaternion.Euler(Vector3.up * -MouseAxis.x * 1000f);
-			Debug.Log(rotationVector);
+			//Debug.Log(rotationVector);
 			if (useMouseRotation && Input.GetKey(mouseRotationKey))
 			{
 				//m_Transform.rotation = Quaternion.Lerp(transform.rotation, rotationVector, Time.deltaTime * mouseRotationSpeed);
@@ -366,10 +384,10 @@ namespace Assets.RTS.Scripts.Cam
 			}
 			else
 			{
-				Ray ray = new Ray(m_Transform.position, Vector3.down);
+				Ray ray = new Ray(m_Camera.transform.position, Vector3.down);
 				RaycastHit hit;
 				if (Physics.Raycast(ray, out hit, groundMask.value))
-					return (hit.point - m_Transform.position).magnitude;
+					return (hit.point - m_Camera.transform.position).magnitude;
 			}
 			return 0f;
 		}

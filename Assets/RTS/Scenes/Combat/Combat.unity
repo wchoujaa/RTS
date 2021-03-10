@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionBounces: 1
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
-  m_Sun: {fileID: 0}
+  m_Sun: {fileID: 2037291745}
   m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
@@ -98,7 +98,8 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_LightingSettings: {fileID: 0}
+  m_LightingSettings: {fileID: 4890085278179872738, guid: ec511b421000251409d9706a7ec1f8b0,
+    type: 2}
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -1411,6 +1412,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 216893427632099555, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: far clip plane
+      value: 10000
+      objectReference: {fileID: 0}
     - target: {fileID: 6533634017434589091, guid: af5fc151c8b75124881007e157e433b0,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1469,17 +1475,92 @@ PrefabInstance:
     - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
         type: 3}
       propertyPath: mouseRotationSpeed
-      value: 1000
+      value: -1000
       objectReference: {fileID: 0}
     - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
         type: 3}
       propertyPath: lastTab
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
         type: 3}
       propertyPath: panningSpeed
-      value: 1500
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: groundMask.m_Bits
+      value: 1024
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: presetSettingsFoldout
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: scrollWheelZoomingSensitivity
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: autoHeight
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: useKeyboardZooming
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: zoomAmount.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: zoomAmount.z
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: useScrollwheelZooming
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: zoomSpeed
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: translateSpeed
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: keyboardMovementSpeed
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: mouseRotationKey
+      value: 325
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: limitMap
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: smoothTime
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6533634017434589117, guid: af5fc151c8b75124881007e157e433b0,
+        type: 3}
+      propertyPath: minHeight
+      value: 50.48
       objectReference: {fileID: 0}
     - target: {fileID: 6533634017434589118, guid: af5fc151c8b75124881007e157e433b0,
         type: 3}

@@ -24,7 +24,7 @@ public class PlayerUnitController : UnitController
 	{
 		base.Update();
 
-		if (Input.GetKeyUp(KeyCode.S))
+		if (Input.GetKeyUp(KeyCode.C))
 		{
 			CancelOrder();
 		}

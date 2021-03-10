@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1043f08be9d63c44a7c4c56275880f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lastTab: 1
+  lastTab: 2
   presetSettingsFoldout: 0
   movementSettingsFoldout: 0
   zoomingSettingsFoldout: 0
@@ -169,7 +169,7 @@ MonoBehaviour:
   verticalAxis: Vertical
   usePanning: 1
   panningKey: 324
-  useKeyboardZooming: 0
+  useKeyboardZooming: 1
   zoomInKey: 101
   zoomOutKey: 113
   useScrollwheelZooming: 1
