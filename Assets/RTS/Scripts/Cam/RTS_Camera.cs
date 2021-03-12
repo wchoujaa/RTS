@@ -127,6 +127,8 @@ namespace Assets.RTS.Scripts.Cam
 		public Vector3 velocity = Vector3.one;
 		public Vector3 desiredMove = Vector3.zero;
 		public float smoothTime = 2f;
+
+		private Vector3 desiredPos = Vector3.one;
 		private Vector2 KeyboardInput
 		{
 			get { return useKeyboardInput ? new Vector2(CrossPlatformInputManager.GetAxis(horizontalAxis), CrossPlatformInputManager.GetAxis(verticalAxis)) : Vector2.zero; }
@@ -272,47 +274,92 @@ namespace Assets.RTS.Scripts.Cam
 
 		}
 
+
+
+		private void OnDrawGizmos()
+		{
+
+
+		}
+
 		/// <summary>
 		/// calcualte height
 		/// </summary>
 		private void HeightCalculation()
 		{
-			float distanceToGround = DistanceToGround();
-			if (useScrollwheelZooming)
-				zoomPos += ScrollWheel * Time.deltaTime * scrollWheelZoomingSensitivity;
-			if (useKeyboardZooming)
-				zoomPos += ZoomDirection * Time.deltaTime * keyboardZoomingSensitivity;
+			Vector3 groundPos = GroundPos();
 
-			zoomPos = Mathf.Clamp01(zoomPos);
+			var distanceVec = (groundPos - m_Camera.transform.position);
+			var distanceToGround = (groundPos.y > m_Camera.transform.position.y) ? -distanceVec.magnitude : distanceVec.magnitude;
+			var scrollWheel = ScrollWheel;
 
-			float targetHeight = Mathf.Lerp(minHeight, maxHeight, zoomPos);
-			float difference = 0;
+			//Debug.Log(distanceToGround);
+
+			//if (useScrollwheelZooming)
+			//	zoomPos += ScrollWheel * Time.deltaTime * scrollWheelZoomingSensitivity;
+			//if (useKeyboardZooming)
+			//	zoomPos += ZoomDirection * Time.deltaTime * keyboardZoomingSensitivity;
+
+			//zoomPos = Mathf.Clamp01(zoomPos);
+
+			//float targetHeight = Mathf.Lerp(minHeight, maxHeight, zoomPos);
+			//float difference = 0;
+
+			//Debug.Log(distanceToGround);
+
+			//if (distanceToGround != targetHeight)
+			//	difference = targetHeight - distanceToGround;
 
 
+			var min = m_Camera.transform.InverseTransformPoint(groundPos) + Vector3.up * minHeight;
+			var max = m_Camera.transform.InverseTransformPoint(groundPos) + Vector3.up * maxHeight;
 
-			if (distanceToGround != targetHeight)
-				difference = targetHeight - distanceToGround;
+
 
 			if (is2d)
 			{
-				m_Camera.orthographicSize = Mathf.Lerp(m_Camera.orthographicSize, targetHeight + difference, Time.deltaTime * heightDampening);
+				//m_Camera.orthographicSize = Mathf.Lerp(m_Camera.orthographicSize, targetHeight + difference, Time.deltaTime * heightDampening);
 			}
-			else
+			else if (distanceToGround < minHeight)
 			{
-				if(distanceToGround > minHeight && distanceToGround < maxHeight)
-				{
- 
- 
-
-					//Vector3 direction = m_Camera.transform.forward *  (targetHeight + difference);// new Vector3(m_Transform.position.x, targetHeight + difference, m_Transform.position.z);
-					zoomDirection += zoomAmount   * ScrollWheel * Time.deltaTime * scrollWheelZoomingSensitivity;
-
-					//zoomDirection *= distanceToGround;
-
-					//m_Camera.transform.localPosition = Vector3.SmoothDamp(m_Camera.transform.localPosition, zoomDirection, ref velocityZoom, Time.deltaTime * zoomSpeed);
-					m_Camera.transform.localPosition = Vector3.Lerp(m_Camera.transform.localPosition, zoomDirection, Time.deltaTime * heightDampening);
-				} 
+				scrollWheel = Mathf.Clamp(scrollWheel, 0, 1);
+				//zoomDirection = Vector3.zero;// Mathf.Clamp(zoomDirection.y, groundPos.y + minHeight, Mathf.Infinity);
+				//zoomDirection += zoomAmount * ScrollWheel * Time.deltaTime * scrollWheelZoomingSensitivity; 
 			}
+			else if (distanceToGround > maxHeight)
+			{
+				scrollWheel = Mathf.Clamp(scrollWheel, -1, 0);
+				//groundPos +=  Vector3.up * maxHeight;
+				//zoomDirection = m_Camera.transform.InverseTransformPoint(groundPos);
+				//zoomDirection  = Vector3.zero;// Mathf.Clamp(zoomDirection.y, groundPos.y + maxHeight, Mathf.Infinity);
+				//zoomDirection += zoomAmount * ScrollWheel * Time.deltaTime * scrollWheelZoomingSensitivity; 
+			}
+
+			//Vector3 direction = m_Camera.transform.forward *  (targetHeight + difference);// new Vector3(m_Transform.position.x, targetHeight + difference, m_Transform.position.z);
+			//zoomDirection *= distanceToGround;
+			//m_Camera.transform.localPosition = Vector3.SmoothDamp(m_Camera.transform.localPosition, zoomDirection, ref velocityZoom, Time.deltaTime * zoomSpeed);
+			//if (zoomDirection.y < min)
+			//{
+			//	zoomDirection.y = min;
+			//	zoomDirection.z = 0;
+			//}
+			//else if (zoomDirection.y > max)
+			//{
+			//	zoomDirection.y = max;
+			//	zoomDirection.z = 0;
+			//}
+			//var add = Vector3.zero;
+			//var zoom = zoomDirection + add * scrollWheel * Time.deltaTime * scrollWheelZoomingSensitivity;
+			//if (zoom.y > min && zoom.y < max)
+			//{
+			//	zoomDirection = zoom;
+			//}
+
+			zoomDirection += zoomAmount * scrollWheel * Time.deltaTime * scrollWheelZoomingSensitivity;
+
+			velocityZoom *= zoomSpeed;
+			m_Camera.transform.localPosition = min; //Vector3.SmoothDamp(m_Camera.transform.localPosition, zoomDirection, ref velocityZoom, Time.deltaTime * heightDampening);
+
 		}
 
 		/// <summary>
@@ -373,23 +420,16 @@ namespace Assets.RTS.Scripts.Cam
 		}
 
 		/// <summary>
-		/// calculate distance to ground
+		/// return point tangent to ground
 		/// </summary>
 		/// <returns></returns>
-		private float DistanceToGround()
+		private Vector3 GroundPos()
 		{
-			if (is2d)
-			{
-				return m_Camera.orthographicSize;
-			}
-			else
-			{
-				Ray ray = new Ray(m_Camera.transform.position, Vector3.down);
-				RaycastHit hit;
-				if (Physics.Raycast(ray, out hit, groundMask.value))
-					return (hit.point - m_Camera.transform.position).magnitude;
-			}
-			return 0f;
+			if (Physics.Raycast(m_Camera.transform.position, Vector3.down, out RaycastHit hit, groundMask.value))
+				return hit.point;
+			if (Physics.Raycast(m_Camera.transform.position, Vector3.up, out hit, groundMask.value))
+				return hit.point;
+			return Vector3.zero;
 		}
 
 		#endregion
