@@ -4767,33 +4767,41 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 265516620, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
-      propertyPath: m_Layer
-      value: 10
+    - target: {fileID: 1095406985, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
+      propertyPath: spring
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1095406983, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
-      propertyPath: m_Layer
-      value: 12
+    - target: {fileID: 1095406985, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
+      propertyPath: mass
+      value: 0.11
       objectReference: {fileID: 0}
     - target: {fileID: 1095406985, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
       propertyPath: gravity
+      value: -1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 1095406985, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
+      propertyPath: repulsion
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1095406985, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
-      propertyPath: ground.m_Bits
-      value: 1024
-      objectReference: {fileID: 0}
-    - target: {fileID: 1567413561, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
-      propertyPath: debug
+      propertyPath: repulsionDistance
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1095406985, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
+      propertyPath: resistance
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1095406985, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
+      propertyPath: startSpread
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 1095406985, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
+      propertyPath: sphereRadius
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 1916159519976378, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
       propertyPath: m_Name
       value: Manager
-      objectReference: {fileID: 0}
-    - target: {fileID: 1916159519976378, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
-      propertyPath: m_Layer
-      value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 4869599969315688, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4838,6 +4846,26 @@ PrefabInstance:
     - target: {fileID: 4869599969315688, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5261402352752175259, guid: ed7d9329ab792ac42b941f6e640ddd74,
+        type: 3}
+      propertyPath: m_UseGravity
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5261402352752175259, guid: ed7d9329ab792ac42b941f6e640ddd74,
+        type: 3}
+      propertyPath: m_Constraints
+      value: 126
+      objectReference: {fileID: 0}
+    - target: {fileID: 5261402352752175259, guid: ed7d9329ab792ac42b941f6e640ddd74,
+        type: 3}
+      propertyPath: m_AngularDrag
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5261402352752175259, guid: ed7d9329ab792ac42b941f6e640ddd74,
+        type: 3}
+      propertyPath: m_Mass
+      value: 10000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed7d9329ab792ac42b941f6e640ddd74, type: 3}

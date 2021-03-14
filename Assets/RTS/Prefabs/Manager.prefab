@@ -63,8 +63,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1095406984}
+  - component: {fileID: 5261402352752175259}
+  - component: {fileID: 1633924697335995096}
   - component: {fileID: 1095406985}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Graph
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -85,6 +87,35 @@ Transform:
   m_Father: {fileID: 4869599969315688}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!54 &5261402352752175259
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1095406983}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!135 &1633924697335995096
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1095406983}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1095406985
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,16 +128,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a615aa1787ea115488e3550ba3075685, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  n: 38
-  rand: 3
+  graphNodePrefab: {fileID: 7438493529455568669, guid: 4e9f3d964c48143428a2d5e68b6d7a31,
+    type: 3}
+  rand: 0
   distance: 0
   spring: 1e+17
   radius: 1
   mass: 10
-  gravity: -119.76
+  gravity: -10000
+  repulsion: 1000
+  repulsionDistance: 10
   resistance: 1
-  startSpread: 10
+  startSpread: 15
   dampingRatio: 14.07
+  ground:
+    serializedVersion: 2
+    m_Bits: 1024
+  testNode: 50
+  sphereRadius: 0
 --- !u!1 &1916159519976378
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,7 +199,6 @@ MonoBehaviour:
   debug: 1
   allTargets: []
   firstMembers: []
-  firstWaypoints: []
   firstWaypointsObj: []
 --- !u!114 &1567413560
 MonoBehaviour:

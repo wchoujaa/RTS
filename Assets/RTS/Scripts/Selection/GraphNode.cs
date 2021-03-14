@@ -8,27 +8,29 @@ namespace Assets.RTS.Scripts.Selection
 {
 	public class GraphNode : MonoBehaviour
 	{
-		Rigidbody rb;
-		SphereCollider sphereCollider;
-		List<SpringJoint> joints = new List<SpringJoint>();
+		public Rigidbody rb;
 		public UnitController unitController;
-		private int ground;
-		public float Radius { get => sphereCollider.radius; }
 
-		private void Awake()
+		private int ground;
+		private SphereCollider sphereCollider;
+		private List<SpringJoint> joints = new List<SpringJoint>();
+		public float Radius { get => sphereCollider.radius; }
+		private SelectionGraph graph;
+		private void Start()
 		{
-			DestroyImmediate(GetComponent<SphereCollider>());
-			rb = gameObject.AddComponent<Rigidbody>();
-			rb.constraints = RigidbodyConstraints.FreezePositionY;
-			sphereCollider = gameObject.AddComponent<SphereCollider>();
 
 		}
 
-		public void Build(SelectionGraph selectionGraph, UnitController uController)
+		public void Build(SelectionGraph selectionGraph)
 		{
+			graph = selectionGraph;
+			rb = GetComponent<Rigidbody>();
+			sphereCollider = gameObject.GetComponent<SphereCollider>();
 			ground = selectionGraph.ground;
 			float startSpread = selectionGraph.startSpread;
 			rb.mass = selectionGraph.mass;
+			rb.constraints = RigidbodyConstraints.FreezePositionY;
+
 			gameObject.layer = selectionGraph.transform.gameObject.layer;
 			gameObject.transform.parent = selectionGraph.transform;
 			gameObject.transform.position = selectionGraph.transform.position + Vector3.right * Random.Range(-startSpread, startSpread) + Vector3.forward * Random.Range(-startSpread, startSpread);
@@ -49,15 +51,20 @@ namespace Assets.RTS.Scripts.Selection
 		}
 
 
+		private void Update()
+		{
+			var maxPos = transform.position;
+
+		}
+
 
 		private void FixedUpdate()
 		{
 
-			RaycastHit hit;
 			Vector3 pos = transform.position + Vector3.up * 2.3f;
 
 
-			if (Physics.Raycast(pos, Vector3.down, out hit, 50f, ground))
+			if (Physics.Raycast(pos, Vector3.down, out RaycastHit hit, 50f, ground))
 			{
 				//use below code if your pivot point is in the middle
 				transform.position = hit.point;
@@ -70,10 +77,35 @@ namespace Assets.RTS.Scripts.Selection
 			}
 
 			//transform.localPosition = pos;
+
+
+			Center();
 		}
 
+		private void Center()
+		{
+			Vector3 direction = transform.position - transform.parent.transform.position;
+			var distance = direction.magnitude;
+			var gravityForce = graph.gravity / (distance * distance);
+			var repulsionForce = graph.repulsion / (distance * distance);
+
+			//Debug.Log(gravityForce);
+			//Vector2 resistanceForce = direction.normalized * resistance * -1f;
+
+			if (distance > graph.repulsionDistance)
+			{
+				if (gravityForce != Mathf.Infinity && gravityForce != Mathf.NegativeInfinity)
+					rb.AddForce(direction * gravityForce);
 
 
+			}
+
+			if (repulsionForce != Mathf.Infinity && repulsionForce != Mathf.NegativeInfinity)
+				rb.AddForce(direction * repulsionForce);
+
+
+
+		}
 
 		public bool IsConnectedTo(GraphNode obj2)
 		{
@@ -112,5 +144,7 @@ namespace Assets.RTS.Scripts.Selection
 			transform.position = transform.parent.position;
 			rb.constraints = RigidbodyConstraints.FreezePositionY | RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
 		}
+
+
 	}
 }
