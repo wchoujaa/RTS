@@ -15,33 +15,37 @@ namespace Assets.RTS.Scripts.Controllers
 		public Vector3 destination = Vector3.negativeInfinity;
 
 		protected Animator animator;
-		protected NavMeshBehaviour navMeshBehaviour;
-		protected FlockingBehaviour flockingBehaviour;
-		protected CombatBehaviour combatBehaviour;
+		protected PathFindingBehaviour pathfinder;
+		protected FlockingBehaviour flocking;
+		protected CombatBehaviour combat;
 		protected Vector3 previousDestination = Vector3.negativeInfinity;
-		protected bool isSelected = false;
+		private bool isSelected = false;
 		protected GroupManager groupManager;
 
 
-		public GameObject selectUI;
 		public UnitStats unitStats;
 		public bool isGroupLeader = false;
 		public Group group;
 		public Renderer colorRenderer;
 		private Color baseColor;
 		public UnitType unitType;
-
+		private GameObject targetObj;
+		private float radius;
 
 		virtual protected void Start()
 		{
-			selectUI = transform.Find("Highlight").gameObject;
-			navMeshBehaviour = GetComponent<NavMeshBehaviour>();
-			flockingBehaviour = GetComponent<FlockingBehaviour>();
-			combatBehaviour = GetComponent<CombatBehaviour>();
+			//selectUI = transform.Find("Highlight").gameObject;
+			pathfinder = GetComponent<PathFindingBehaviour>();
+			flocking = GetComponent<FlockingBehaviour>();
+			combat = GetComponent<CombatBehaviour>();
 			animator = GetComponentInChildren<Animator>();
 			baseColor = colorRenderer.material.color;
 			groupManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GroupManager>();
 			unitType = unitStats.unitType;
+			targetObj = Instantiate(pathfinder.waypointPrefab, Vector3.zero, Quaternion.identity, null);
+			targetObj.GetComponent<Renderer>().material.color = Color.green;
+			targetObj.SetActive(false);
+			radius = unitStats.radius;
 		}
 
 		virtual protected void Update()
@@ -49,58 +53,62 @@ namespace Assets.RTS.Scripts.Controllers
 			//animator.SetFloat("speed", navMeshBehaviour.agent.velocity.magnitude); 
 		}
 
+		private void FixedUpdate()
+		{
+			if (isGroupLeader)
+			{
+				bool active = !pathfinder.TargetReached();
+				targetObj.SetActive(active);
+				targetObj.transform.position = pathfinder.Target;
+			}
+		}
+
 
 
 		virtual public void SetSelected(bool isSelected)
 		{
-			this.isSelected = isSelected;
+			this.IsSelected = isSelected;
 			//selectUI.SetActive(isSelected);
 
 			Color color = colorRenderer.material.GetColor("_OutlineColor");
-			color.a = (isSelected) ? 1f: 0f;
+			color.a = (isSelected) ? 1f : 0f;
 			colorRenderer.material.SetColor("_OutlineColor", color);
 			//Debug.Log(colorRenderer.material.GetColor("_OutlineColor"));
 		}
 
-		public float GetRadius()
-		{
-			return navMeshBehaviour.agent.radius;
-		}
-
 		public void UpdateTarget(Transform enemy)
 		{
-			combatBehaviour.SetNewTarget(enemy);
-			navMeshBehaviour.SetDestination(enemy.position);
+			combat.SetNewTarget(enemy);
+			pathfinder.SetDestination(enemy.position);
 
 		}
 
 
 
-		public void AddWaypoint(Vector3 dest, Vector3 position)
+		//public void AddWaypoint(Vector3 dest, Vector3 position)
+		//{
+
+		//	if (group == null)
+		//	{
+		//		MoveUnit(dest, position);
+		//	}
+
+		//	pathfinder.AddWaypoint(position);
+
+		//	if (pathfinder.TargetReached())
+		//	{
+		//		pathfinder.SetDestination(position);
+		//	}
+		//}
+
+
+
+		public void MoveUnit(Vector3 dest, Vector3 position, bool isWaypoint=false)
 		{
-
-			if (group == null)
-			{
-				MoveUnit(dest, position);
-			}
-
-			navMeshBehaviour.AddWaypoint(position);
-			
-			if (navMeshBehaviour.TargetReached())
-			{
-				navMeshBehaviour.SetDestination(position);
-			}
-		}
-
-
-
-		public void MoveUnit(Vector3 dest, Vector3 position)
-		{
-
-			navMeshBehaviour.ClearWaypoints();
+			if (!isWaypoint)
+				pathfinder.ClearWaypoints();
 			SetGroup(dest);
-			navMeshBehaviour.SetDestination(position);
-			navMeshBehaviour.AddWaypoint(position);
+			pathfinder.AddWaypoint(position);
 			previousDestination = dest;
 		}
 
@@ -119,8 +127,8 @@ namespace Assets.RTS.Scripts.Controllers
 			else
 			{
 				group = groupManager.addToGroup(dest, gameObject);
-				group.leaderRadius = flockingBehaviour.flockingStats.leaderRadius;
-				group.separationValue = flockingBehaviour.flockingStats.separation;
+				group.leaderRadius = flocking.flockingStats.leaderRadius;
+				group.separationValue = flocking.flockingStats.separation;
 			}
 		}
 
@@ -145,7 +153,7 @@ namespace Assets.RTS.Scripts.Controllers
 			}
 		}
 
-		public float Radius { get => this.navMeshBehaviour.agent.radius; }
-		
+		public float Radius { get => radius; set => radius = value; }
+		public bool IsSelected { get => isSelected; set => isSelected = value; }
 	}
 }

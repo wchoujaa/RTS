@@ -1,4 +1,5 @@
 using Assets.RTS.Scripts.Combat;
+using Assets.RTS.Scripts.Controllers;
 using Assets.RTS.Scripts.ScriptableObjects;
 using GNB;
 using System.Collections;
@@ -17,14 +18,14 @@ public class TurretShooting : MonoBehaviour
 	public bool isFiring = false;
 	[Range(1, 1000)]
 	public float Rate;
-	private PlayerUnitController unitController;
+	private UnitController unitController;
 	private CombatBehaviour combatBehaviour;
 
 
 	private void Start()
 	{
 		combatBehaviour = GetComponent<CombatBehaviour>();
-		unitController = GetComponentInParent<PlayerUnitController>();
+		unitController = GetComponentInParent<UnitController>();
 	}
 
 	private void Update()

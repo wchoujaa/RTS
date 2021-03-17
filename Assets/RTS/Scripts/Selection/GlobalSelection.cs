@@ -221,17 +221,9 @@ namespace Assets.RTS.Scripts.Selection
 
 				GraphNode node = graph[i];
 
-
-				if (isWaypoint && addWaypoint)
-				{
-					node.unitController.AddWaypoint(target.transform.position, node.transform.position);
-					//selected.AddWaypoint(target.transform.position, node.transform.position);
-				}
-				else
-				{
-					node.unitController.MoveUnit(target.transform.position, node.transform.position);
-					//selected.MoveUnit(target.transform.position, node.transform.position);
-				}
+				var boolValue = isWaypoint && addWaypoint;
+				node.unitController.MoveUnit(target.transform.position, node.transform.position, boolValue);
+ 
 
 			}
  
