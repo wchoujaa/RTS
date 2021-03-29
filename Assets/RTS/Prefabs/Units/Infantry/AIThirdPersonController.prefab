@@ -245,6 +245,7 @@ MonoBehaviour:
   currentWP: 0
   waypoints: []
   target: {fileID: 0}
+  groundWaypointOffset: 0.1
 --- !u!114 &6693000157492291467
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,12 +1,13 @@
 ﻿
 using Assets.RTS.Scripts.Controllers;
+using Assets.RTS.Scripts.Selection.Formation;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace Assets.RTS.Scripts.Selection
 {
-	public class GraphNode : MonoBehaviour
+	public class Node : MonoBehaviour
 	{
 		public Rigidbody rb;
 		public UnitController unitController;
@@ -15,13 +16,13 @@ namespace Assets.RTS.Scripts.Selection
 		private SphereCollider sphereCollider;
 		private List<SpringJoint> joints = new List<SpringJoint>();
 		public float Radius { get => sphereCollider.radius; }
-		private SelectionGraph graph;
+		private GraphFormation graph;
 		private void Start()
 		{
 
 		}
 
-		public void Build(SelectionGraph selectionGraph)
+		public void Build(GraphFormation selectionGraph)
 		{
 			graph = selectionGraph;
 			rb = GetComponent<Rigidbody>();
@@ -109,7 +110,7 @@ namespace Assets.RTS.Scripts.Selection
 
 		}
 
-		public bool IsConnectedTo(GraphNode obj2)
+		public bool IsConnectedTo(Node obj2)
 		{
 			bool value = false;
 
@@ -125,7 +126,7 @@ namespace Assets.RTS.Scripts.Selection
 			return value; //gameObject.GetComponent<SpringJoint>() != null;//&& gameObject.GetComponent<SpringJoint>().connectedBody == obj2;
 		}
 
-		public void ConnectTo(GraphNode obj2, SelectionGraph selectionGraph)
+		public void ConnectTo(Node obj2, GraphFormation selectionGraph)
 		{
 
 			SpringJoint joint = gameObject.AddComponent<SpringJoint>();

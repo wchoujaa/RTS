@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using Assets.RTS.Scripts.Selection.Formation;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomEditor(typeof(SelectionGraph))]
+[CustomEditor(typeof(GraphFormation))]
 public class GraphEditor : Editor
 {
 
@@ -17,7 +18,7 @@ public class GraphEditor : Editor
 		if (GUILayout.Button("Generate n nodes"))
 		{
 			//add everthing the button would do.
-			SelectionGraph graph = (SelectionGraph)target;
+			GraphFormation graph = (GraphFormation)target;
 			graph.GenerateTest();
 		}
 	}

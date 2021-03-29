@@ -1,4 +1,5 @@
 using Assets.RTS.Scripts.Controllers;
+using Assets.RTS.Scripts.Selection.Formation;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ namespace Assets.RTS.Scripts.Selection
 {
 	public class GlobalSelection : MonoBehaviour
 	{
-		private SelectionGraph selectionGraph;
+		private GraphFormation selectionGraph;
 		public GameObject target;
 
 		SelectedDictionary selectedTable;
@@ -40,7 +41,7 @@ namespace Assets.RTS.Scripts.Selection
  
 		void Start()
 		{
-			selectionGraph = GetComponentInChildren<SelectionGraph>();
+			selectionGraph = GetComponentInChildren<GraphFormation>();
 			selectedTable = gameObject.GetComponent<SelectedDictionary>();
 			dragSelect = false;
 			target = new GameObject("Selection pointer");
@@ -210,12 +211,12 @@ namespace Assets.RTS.Scripts.Selection
 		private void SelectionSetTarget(GameObject target, bool isWaypoint)
 		{
 			List<UnitController> selection = selectedTable.getSelection();
-			List<GraphNode> graph = selectionGraph.Graph;
+			List<Node> graph = selectionGraph.Graph;
 			for (int i = 0; i < selection.Count; i++)
 			{
 
 
-				GraphNode node = graph[i];
+				Node node = graph[i];
 
  				node.unitController.MoveUnit(target.transform.position, node.transform.position, isWaypoint); 
 			} 
