@@ -75,6 +75,7 @@ namespace Assets.RTS.Scripts.Selection
 					target = null;
 				}
 
+
 				if (target != null)
 				{
 					//Debug.Log(target.transform.position);
@@ -211,7 +212,9 @@ namespace Assets.RTS.Scripts.Selection
 			List<UnitController> selection = selectedTable.getSelection();
 			List<GraphNode> graph = selectionGraph.Graph;
 			for (int i = 0; i < selection.Count; i++)
-			{ 
+			{
+
+
 				GraphNode node = graph[i];
 
  				node.unitController.MoveUnit(target.transform.position, node.transform.position, isWaypoint); 

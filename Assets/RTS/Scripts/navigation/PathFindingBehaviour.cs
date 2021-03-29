@@ -147,8 +147,10 @@ public class PathFindingBehaviour : MonoBehaviour
 		// waypoint diplay
 		Vector3[] corners = GetPath(point);
 		GameObject waypoint;
+
 		for (int i = 0; i < corners.Length; i++)
 		{
+
 			Vector3 target = corners[i];
 			waypoint = InstantiateWaypoint(target);
 
