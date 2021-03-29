@@ -150,6 +150,7 @@ public class SelectionGraph : MonoBehaviour
 	private void AddNode()
 	{
 		GameObject obj = Instantiate(graphNodePrefab, transform);
+		obj.name = "Node";
 		GraphNode node = obj.GetComponent<GraphNode>();
 		node.Build(this);
 

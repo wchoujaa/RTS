@@ -1,4 +1,5 @@
 using Assets.RTS.Scripts.Combat;
+using Assets.RTS.Scripts.Managers;
 using Assets.RTS.Scripts.navigation;
 using Assets.RTS.Scripts.ScriptableObjects;
 using System;
@@ -16,12 +17,13 @@ namespace Assets.RTS.Scripts.Controllers
 
 		protected Animator animator;
 		protected PathFindingBehaviour pathfinder;
-		protected FlockingBehaviour flocking;
+		//protected FlockingBehaviour flocking;
 		protected CombatBehaviour combat;
 		protected Vector3 previousDestination = Vector3.negativeInfinity;
 		private bool isSelected = false;
 		protected GroupManager groupManager;
 
+		private InputManager inputManager;
 
 		public UnitStats unitStats;
 		public bool isGroupLeader = false;
@@ -29,38 +31,62 @@ namespace Assets.RTS.Scripts.Controllers
 		public Renderer colorRenderer;
 		private Color baseColor;
 		public UnitType unitType;
-		private GameObject targetObj;
-		private float radius;
+ 		private float radius;
 
 		virtual protected void Start()
 		{
 			//selectUI = transform.Find("Highlight").gameObject;
 			pathfinder = GetComponent<PathFindingBehaviour>();
-			flocking = GetComponent<FlockingBehaviour>();
-			combat = GetComponent<CombatBehaviour>();
+ 			combat = GetComponent<CombatBehaviour>();
 			animator = GetComponentInChildren<Animator>();
 			baseColor = colorRenderer.material.color;
 			groupManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GroupManager>();
 			unitType = unitStats.unitType;
-			targetObj = Instantiate(pathfinder.waypointPrefab, Vector3.zero, Quaternion.identity, null);
-			targetObj.GetComponent<Renderer>().material.color = Color.green;
-			targetObj.SetActive(false);
+ 
 			radius = unitStats.radius;
+			inputManager = FindObjectOfType<InputManager>();
+
 		}
 
 		virtual protected void Update()
 		{
 			//animator.SetFloat("speed", navMeshBehaviour.agent.velocity.magnitude); 
+			if (Input.GetKeyUp(KeyCode.X))
+			{
+				CancelOrder();
+			}
+
+			handleInput();
 		}
 
 		private void FixedUpdate()
 		{
-			if (isGroupLeader)
+ 
+		}
+
+
+		private void handleInput()
+		{
+
+
+			if (IsSelected && isGroupLeader)
 			{
-				bool active = !pathfinder.TargetReached();
-				targetObj.SetActive(active);
-				targetObj.transform.position = pathfinder.Target;
+				if (inputManager.doubleE.DoubleClickLongPressedCheak())
+				{
+					//flocking.SpreadUnit(-flocking.flockingStats.spreadAmount);
+
+				}
+				else if (inputManager.doubleE.SingleClickLongPressedCheck())
+				{
+					//flocking.SpreadUnit(flocking.flockingStats.spreadAmount);
+				}
 			}
+		}
+
+		public void CancelOrder()
+		{
+			//combatBehaviour.Cancel();
+			MoveUnit(transform.position, transform.position);
 		}
 
 
@@ -70,16 +96,17 @@ namespace Assets.RTS.Scripts.Controllers
 			this.IsSelected = isSelected;
 			//selectUI.SetActive(isSelected);
 
-			Color color = colorRenderer.material.GetColor("_OutlineColor");
-			color.a = (isSelected) ? 1f : 0f;
-			colorRenderer.material.SetColor("_OutlineColor", color);
+			//Color color = colorRenderer.material.GetColor("Albedo");
+			//color.a = (isSelected) ? 1f : 0f;
+			colorRenderer.material.color = Color.green;
 			//Debug.Log(colorRenderer.material.GetColor("_OutlineColor"));
 		}
 
 		public void UpdateTarget(Transform enemy)
 		{
 			combat.SetNewTarget(enemy);
-			pathfinder.SetDestination(enemy.position);
+			pathfinder.ClearWaypoints(); 
+			pathfinder.AddWaypoint(enemy.position);
 
 		}
 
@@ -127,8 +154,8 @@ namespace Assets.RTS.Scripts.Controllers
 			else
 			{
 				group = groupManager.addToGroup(dest, gameObject);
-				group.leaderRadius = flocking.flockingStats.leaderRadius;
-				group.separationValue = flocking.flockingStats.separation;
+				//group.leaderRadius = flocking.flockingStats.leaderRadius;
+				//group.separationValue = flocking.flockingStats.separation;
 			}
 		}
 
@@ -140,7 +167,7 @@ namespace Assets.RTS.Scripts.Controllers
 			{
 				if (value == true)
 				{
-					colorRenderer.material.color = Color.red;
+					colorRenderer.material.color = Color.green;
 
 				}
 				else

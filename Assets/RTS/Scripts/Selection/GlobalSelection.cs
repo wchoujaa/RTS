@@ -36,24 +36,20 @@ namespace Assets.RTS.Scripts.Selection
 		public LayerMask ground;
 		public LayerMask unit;
 		public string playerUnitTag;
-		private bool addWaypoint = false;
-		public bool debug = false;
-
+ 		public bool debug = false;
+ 
 		void Start()
 		{
 			selectionGraph = GetComponentInChildren<SelectionGraph>();
 			selectedTable = gameObject.GetComponent<SelectedDictionary>();
 			dragSelect = false;
+			target = new GameObject("Selection pointer");
 		}
 
 		// Update is called once per frame
 		void Update()
 		{
-
-			if (Input.GetKeyUp(KeyCode.LeftShift))
-			{
-				addWaypoint = false;
-			}
+			 
 
 
 
@@ -71,7 +67,7 @@ namespace Assets.RTS.Scripts.Selection
 				}
 				else if (Physics.Raycast(ray, out hit, 50000.0f, ground)) //if we hit ground
 				{
-					target = new GameObject();
+					
 					target.transform.position = hit.point;
 				}
 				else
@@ -215,21 +211,11 @@ namespace Assets.RTS.Scripts.Selection
 			List<UnitController> selection = selectedTable.getSelection();
 			List<GraphNode> graph = selectionGraph.Graph;
 			for (int i = 0; i < selection.Count; i++)
-			{
-
-				//UnitController selected = selection[i];
-
+			{ 
 				GraphNode node = graph[i];
 
-				var boolValue = isWaypoint && addWaypoint;
-				node.unitController.MoveUnit(target.transform.position, node.transform.position, boolValue);
- 
-
-			}
- 
-
-			addWaypoint = isWaypoint;
-
+ 				node.unitController.MoveUnit(target.transform.position, node.transform.position, isWaypoint); 
+			} 
 		}
 
 		//check collisions with our dynamically created box collider

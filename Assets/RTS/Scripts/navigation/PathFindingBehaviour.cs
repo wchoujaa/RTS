@@ -16,10 +16,10 @@ public class PathFindingBehaviour : MonoBehaviour
 	public int currentWP = 0;
 	private Vector3 direction;
 	public List<GameObject> waypoints = new List<GameObject>();
-	public Vector3 target;
+	public GameObject target;
 
 	private NavMeshPath path;
-	public Vector3 Target { get => target; set => target = value; }
+	public GameObject Target { get => target; set => target = value; }
 
 	// Start is called before the first frame update
 	void Start()
@@ -27,8 +27,7 @@ public class PathFindingBehaviour : MonoBehaviour
 		uController = GetComponent<UnitController>();
 		flockingBehaviour = GetComponent<FlockingBehaviour>();
 		path = new NavMeshPath();
-		target = transform.position;
-	}
+ 	}
 
 	void Update()
 	{
@@ -43,7 +42,6 @@ public class PathFindingBehaviour : MonoBehaviour
 		if (TargetReached() || (IsNearLeader() && !uController.isGroupLeader))
 		{
 			NextWaypoint();
-
 		}
 
 
@@ -71,37 +69,33 @@ public class PathFindingBehaviour : MonoBehaviour
 		}
 
 
+		DebugPath();
+
+
+	}
+
+	private void DebugPath()
+	{
+		if (path.corners.Length == 1)
+			Debug.DrawLine(transform.position, path.corners[0], Color.red);
+
 		for (int i = 0; i < path.corners.Length - 1; i++)
 			Debug.DrawLine(path.corners[i], path.corners[i + 1], Color.red);
 	}
 
 
-
-	public void SetDestination(Vector3 dest)
-	{
-		NavMeshHit myNavHit;
-
-		if (NavMesh.SamplePosition(dest, out myNavHit, 100, -1))
-		{
-			if (NavMesh.CalculatePath(transform.position, myNavHit.position, NavMesh.AllAreas, path))
-			{
-				Target = path.corners[0];
-
-				if (uController.isGroupLeader)
-				{
-					GetGroup().target = Target;
-					GetGroup().TargetReached = false;
-				}
-			}
-		}
-	}
-
 	private void NextWaypoint()
 	{
-		Debug.Log(currentWP);
-		if (waypoints.Count == 0 | currentWP >= waypoints.Count) return;
+		//Debug.Log(currentWP);
+		if (waypoints.Count == 0 | currentWP >= waypoints.Count)
+		{
+			ClearWaypoints();
+			return;
+		}
+		//Debug.Log(currentWP);
 		GameObject nextWaypont = waypoints[currentWP];
-		SetDestination(nextWaypont.transform.position);
+		Target = nextWaypont;
+		//SetDestination(nextWaypont.transform.position);
 
 		if (uController.IsGroupLeader && currentWP > 0 && waypoints.Count > 1) // update waypoint display
 		{
@@ -125,20 +119,53 @@ public class PathFindingBehaviour : MonoBehaviour
 			Destroy(obj);
 		}
 
-		target = transform.position;
+		target = null;
 
 		waypoints.Clear();
 
 		currentWP = 0; // reset waypoint counter
 	}
 
+	public Vector3[] GetPath(Vector3 dest)
+	{
+		NavMeshHit myNavHit;
+		Vector3[] corners = new Vector3[0];
+		Vector3 source = (waypoints.Count > 0) ? waypoints[waypoints.Count - 1].transform.position : transform.position;
+		if (NavMesh.SamplePosition(dest, out myNavHit, 100, -1))
+		{
+			if (NavMesh.CalculatePath(source, myNavHit.position, NavMesh.AllAreas, path))
+			{
+				corners = path.corners;
+			}
+		}
+		return corners;
+	}
+
+
 	public void AddWaypoint(Vector3 point)
 	{
-		GameObject waypoint;
 		// waypoint diplay
+		Vector3[] corners = GetPath(point);
+		GameObject waypoint;
+		for (int i = 0; i < corners.Length; i++)
+		{
+			Vector3 target = corners[i];
+			waypoint = InstantiateWaypoint(target);
+
+			if (waypoints.Count == 0) Target = waypoint;
+
+			waypoints.Add(waypoint);
+		}
+	}
+
+	private GameObject InstantiateWaypoint(Vector3 position)
+	{
+		GameObject waypoint;
+		position += Vector3.up * 1.5f;
 		if (uController.isGroupLeader) // if is Group Leader, add to group waypoint list and display it
 		{
-			waypoint = Instantiate(waypointPrefab, point, Quaternion.identity, null);
+			waypoint = Instantiate(waypointPrefab, position, Quaternion.identity, null);
+			waypoint.name = "waypoint";
 			LineRenderer lineRenderer = waypoint.GetComponent<LineRenderer>();
 
 			if (waypoints.Count > 0) // if there is one or more waypoint
@@ -150,18 +177,16 @@ public class PathFindingBehaviour : MonoBehaviour
 		}
 		else
 		{
-			waypoint = new GameObject();
-			waypoint.transform.position = point;
+			waypoint = new GameObject("waypoint");
+			waypoint.transform.position = position;
 		}
-
-		if (waypoints.Count == 0) Target = waypoint.transform.position;
-
-		waypoints.Add(waypoint); 
+		return waypoint;
 	}
 
 	public bool TargetReached()
 	{
- 		return (Target - transform.position).magnitude < uController.unitStats.stoppingDistance;
+		if (target == null) return true;
+		return (target.transform.position - transform.position).magnitude < uController.unitStats.stoppingDistance;
 	}
 
 	public bool IsNearLeader()
