@@ -90,9 +90,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4444562789355198640}
-  - component: {fileID: 4444562789355198646}
-  - component: {fileID: 4444562789355198641}
-  - component: {fileID: 4444562789355198651}
+  - component: {fileID: 5086809969003371882}
+  - component: {fileID: 211836790094931132}
   - component: {fileID: 9206211961783754822}
   - component: {fileID: 5999111082554086048}
   m_Layer: 9
@@ -121,7 +120,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4444562789355198646
+--- !u!114 &5086809969003371882
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -130,16 +129,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 4444562789355198643}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 489457bcc087872499e5041c7b293042, type: 3}
+  m_Script: {fileID: 11500000, guid: 3bc0570481e206e4bbcc828b2d9b0f7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   destination: {x: -Infinity, y: -Infinity, z: -Infinity}
-  selectUI: {fileID: 6474615927390240163}
   unitStats: {fileID: 11400000, guid: df08b019578e9c646b32fcc6817c93fb, type: 2}
   isGroupLeader: 0
   colorRenderer: {fileID: 7599982502055396470}
   unitType: 0
---- !u!114 &4444562789355198641
+--- !u!114 &211836790094931132
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,37 +146,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 4444562789355198643}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1a500bd2acb1464297871d946a1ea1f, type: 3}
+  m_Script: {fileID: 11500000, guid: 82410e540b7c8b74b8c9515e322bf567, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 0}
-  agentStats: {fileID: 11400000, guid: 74ce0baa6f567cc419c71c91e95492e9, type: 2}
   waypointPrefab: {fileID: 1228805201830809041, guid: 5fd06891140e33345bed9306667162cb,
     type: 3}
   currentWP: 0
   waypoints: []
---- !u!195 &4444562789355198651
-NavMeshAgent:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4444562789355198643}
-  m_Enabled: 1
-  m_AgentTypeID: 0
-  m_Radius: 1
-  m_Speed: 11
-  m_Acceleration: 8
-  avoidancePriority: 50
-  m_AngularSpeed: 120
-  m_StoppingDistance: 1
-  m_AutoTraverseOffMeshLink: 1
-  m_AutoBraking: 1
-  m_AutoRepath: 1
-  m_Height: 1
-  m_BaseOffset: 0
-  m_WalkableMask: 4294967295
-  m_ObstacleAvoidanceType: 1
+  target: {fileID: 0}
 --- !u!114 &9206211961783754822
 MonoBehaviour:
   m_ObjectHideFlags: 0

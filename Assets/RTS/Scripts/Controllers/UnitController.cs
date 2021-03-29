@@ -1,4 +1,5 @@
 using Assets.RTS.Scripts.Combat;
+using Assets.RTS.Scripts.Managers;
 using Assets.RTS.Scripts.navigation;
 using Assets.RTS.Scripts.ScriptableObjects;
 using System;
@@ -15,92 +16,126 @@ namespace Assets.RTS.Scripts.Controllers
 		public Vector3 destination = Vector3.negativeInfinity;
 
 		protected Animator animator;
-		protected NavMeshBehaviour navMeshBehaviour;
-		protected FlockingBehaviour flockingBehaviour;
-		protected CombatBehaviour combatBehaviour;
+		protected PathFindingBehaviour pathfinder;
+		//protected FlockingBehaviour flocking;
+		protected CombatBehaviour combat;
 		protected Vector3 previousDestination = Vector3.negativeInfinity;
-		protected bool isSelected = false;
+		private bool isSelected = false;
 		protected GroupManager groupManager;
 
+		private InputManager inputManager;
 
-		public GameObject selectUI;
 		public UnitStats unitStats;
 		public bool isGroupLeader = false;
 		public Group group;
 		public Renderer colorRenderer;
 		private Color baseColor;
 		public UnitType unitType;
-
+ 		private float radius;
 
 		virtual protected void Start()
 		{
-			selectUI = transform.Find("Highlight").gameObject;
-			navMeshBehaviour = GetComponent<NavMeshBehaviour>();
-			flockingBehaviour = GetComponent<FlockingBehaviour>();
-			combatBehaviour = GetComponent<CombatBehaviour>();
+			//selectUI = transform.Find("Highlight").gameObject;
+			pathfinder = GetComponent<PathFindingBehaviour>();
+ 			combat = GetComponent<CombatBehaviour>();
 			animator = GetComponentInChildren<Animator>();
 			baseColor = colorRenderer.material.color;
 			groupManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GroupManager>();
 			unitType = unitStats.unitType;
+ 
+			radius = unitStats.radius;
+			inputManager = FindObjectOfType<InputManager>();
+
 		}
 
 		virtual protected void Update()
 		{
 			//animator.SetFloat("speed", navMeshBehaviour.agent.velocity.magnitude); 
+			if (Input.GetKeyUp(KeyCode.X))
+			{
+				CancelOrder();
+			}
+
+			handleInput();
+		}
+
+		private void FixedUpdate()
+		{
+ 
+		}
+
+
+		private void handleInput()
+		{
+
+
+			if (IsSelected && isGroupLeader)
+			{
+				if (inputManager.doubleE.DoubleClickLongPressedCheak())
+				{
+					//flocking.SpreadUnit(-flocking.flockingStats.spreadAmount);
+
+				}
+				else if (inputManager.doubleE.SingleClickLongPressedCheck())
+				{
+					//flocking.SpreadUnit(flocking.flockingStats.spreadAmount);
+				}
+			}
+		}
+
+		public void CancelOrder()
+		{
+			//combatBehaviour.Cancel();
+			MoveUnit(transform.position, transform.position);
 		}
 
 
 
 		virtual public void SetSelected(bool isSelected)
 		{
-			this.isSelected = isSelected;
+			this.IsSelected = isSelected;
 			//selectUI.SetActive(isSelected);
 
-			Color color = colorRenderer.material.GetColor("_OutlineColor");
-			color.a = (isSelected) ? 1f: 0f;
-			colorRenderer.material.SetColor("_OutlineColor", color);
+			//Color color = colorRenderer.material.GetColor("Albedo");
+			//color.a = (isSelected) ? 1f : 0f;
+			colorRenderer.material.color = Color.green;
 			//Debug.Log(colorRenderer.material.GetColor("_OutlineColor"));
-		}
-
-		public float GetRadius()
-		{
-			return navMeshBehaviour.agent.radius;
 		}
 
 		public void UpdateTarget(Transform enemy)
 		{
-			combatBehaviour.SetNewTarget(enemy);
-			navMeshBehaviour.SetDestination(enemy.position);
+			combat.SetNewTarget(enemy);
+			pathfinder.ClearWaypoints(); 
+			pathfinder.AddWaypoint(enemy.position);
 
 		}
 
 
 
-		public void AddWaypoint(Vector3 dest, Vector3 position)
+		//public void AddWaypoint(Vector3 dest, Vector3 position)
+		//{
+
+		//	if (group == null)
+		//	{
+		//		MoveUnit(dest, position);
+		//	}
+
+		//	pathfinder.AddWaypoint(position);
+
+		//	if (pathfinder.TargetReached())
+		//	{
+		//		pathfinder.SetDestination(position);
+		//	}
+		//}
+
+
+
+		public void MoveUnit(Vector3 dest, Vector3 position, bool isWaypoint=false)
 		{
-
-			if (group == null)
-			{
-				MoveUnit(dest, position);
-			}
-
-			navMeshBehaviour.AddWaypoint(position);
-			
-			if (navMeshBehaviour.TargetReached())
-			{
-				navMeshBehaviour.SetDestination(position);
-			}
-		}
-
-
-
-		public void MoveUnit(Vector3 dest, Vector3 position)
-		{
-
-			navMeshBehaviour.ClearWaypoints();
+			if (!isWaypoint)
+				pathfinder.ClearWaypoints();
 			SetGroup(dest);
-			navMeshBehaviour.SetDestination(position);
-			navMeshBehaviour.AddWaypoint(position);
+			pathfinder.AddWaypoint(position);
 			previousDestination = dest;
 		}
 
@@ -119,8 +154,8 @@ namespace Assets.RTS.Scripts.Controllers
 			else
 			{
 				group = groupManager.addToGroup(dest, gameObject);
-				group.leaderRadius = flockingBehaviour.flockingStats.leaderRadius;
-				group.separationValue = flockingBehaviour.flockingStats.separation;
+				//group.leaderRadius = flocking.flockingStats.leaderRadius;
+				//group.separationValue = flocking.flockingStats.separation;
 			}
 		}
 
@@ -132,7 +167,7 @@ namespace Assets.RTS.Scripts.Controllers
 			{
 				if (value == true)
 				{
-					colorRenderer.material.color = Color.red;
+					colorRenderer.material.color = Color.green;
 
 				}
 				else
@@ -145,7 +180,7 @@ namespace Assets.RTS.Scripts.Controllers
 			}
 		}
 
-		public float Radius { get => this.navMeshBehaviour.agent.radius; }
-		
+		public float Radius { get => radius; set => radius = value; }
+		public bool IsSelected { get => isSelected; set => isSelected = value; }
 	}
 }
