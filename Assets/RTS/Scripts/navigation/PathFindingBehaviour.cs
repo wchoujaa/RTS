@@ -17,7 +17,7 @@ public class PathFindingBehaviour : MonoBehaviour
 	private Vector3 direction;
 	public List<GameObject> waypoints = new List<GameObject>();
 	public GameObject target;
-
+	public float groundWaypointOffset = 0.1f;
 	private NavMeshPath path;
 	public GameObject Target { get => target; set => target = value; }
 
@@ -27,7 +27,7 @@ public class PathFindingBehaviour : MonoBehaviour
 		uController = GetComponent<UnitController>();
 		flockingBehaviour = GetComponent<FlockingBehaviour>();
 		path = new NavMeshPath();
- 	}
+	}
 
 	void Update()
 	{
@@ -38,40 +38,39 @@ public class PathFindingBehaviour : MonoBehaviour
 	{
 
 
-		//Debug.Log(currentWP + " " + waypoints.Count);
+		// Debug.Log(currentWP + " " + waypoints.Count);
+		
+
 		if (TargetReached() || (IsNearLeader() && !uController.isGroupLeader))
 		{
 			NextWaypoint();
 		}
+
+		updateWaypointDisplay();
+
+
 
 
 		if (uController.isGroupLeader && TargetReached())
 		{
 			GetGroup().TargetReached = true;
 		}
+ 
 
 
-		switch (uController.unitType)
+		//DebugPath();
+
+
+	}
+
+	private void updateWaypointDisplay()
+	{
+ 		 
+		if (uController.isGroupLeader && target != null)
 		{
-			case UnitType.Tank:
-				//if (Vector3.Angle(agent.velocity, transform.forward) > 3f)
-				//{
-				//	transform.position = agent.nextPosition;
-				//}
-				break;
-			case UnitType.Vehicle:
-			case UnitType.Infantry:
-			case UnitType.Jet:
-			case UnitType.Heli:
-				break;
-			default:
-				break;
-		}
 
-
-		DebugPath();
-
-
+			target.GetComponent<LineRenderer>().SetPosition(0, transform.position + Vector3.up * groundWaypointOffset);
+		} 
 	}
 
 	private void DebugPath()
@@ -95,15 +94,20 @@ public class PathFindingBehaviour : MonoBehaviour
 		//Debug.Log(currentWP);
 		GameObject nextWaypont = waypoints[currentWP];
 		Target = nextWaypont;
-		//SetDestination(nextWaypont.transform.position);
 
-		if (uController.IsGroupLeader && currentWP > 0 && waypoints.Count > 1) // update waypoint display
+		if (uController.IsGroupLeader) // update waypoint display
 		{
 			GameObject nextWaypointObj = waypoints[currentWP];
 			nextWaypointObj.GetComponent<LineRenderer>().SetPosition(1, nextWaypointObj.transform.position);
+		}
+
+		if (currentWP > 0 && waypoints.Count > 1) // destroy previous
+		{
 			GameObject previous = waypoints[currentWP - 1];
 			Destroy(previous);
 		}
+
+
 
 		currentWP++;
 
@@ -163,24 +167,26 @@ public class PathFindingBehaviour : MonoBehaviour
 	private GameObject InstantiateWaypoint(Vector3 position)
 	{
 		GameObject waypoint;
-		position += Vector3.up * 1.5f;
+		position += Vector3.up * groundWaypointOffset;
+		waypoint = Instantiate(waypointPrefab, position, Quaternion.identity, null);
+		waypoint.name = "waypoint";
+
 		if (uController.isGroupLeader) // if is Group Leader, add to group waypoint list and display it
 		{
-			waypoint = Instantiate(waypointPrefab, position, Quaternion.identity, null);
-			waypoint.name = "waypoint";
+
 			LineRenderer lineRenderer = waypoint.GetComponent<LineRenderer>();
 
 			if (waypoints.Count > 0) // if there is one or more waypoint
 			{
 				Vector3 last = waypoints[waypoints.Count - 1].transform.position;
 				lineRenderer.SetPosition(1, last);
-				lineRenderer.SetPosition(0, waypoint.transform.position);
+			} else
+			{
+				lineRenderer.SetPosition(1, transform.position); 
 			}
-		}
-		else
-		{
-			waypoint = new GameObject("waypoint");
-			waypoint.transform.position = position;
+
+			lineRenderer.SetPosition(0, waypoint.transform.position);
+
 		}
 		return waypoint;
 	}

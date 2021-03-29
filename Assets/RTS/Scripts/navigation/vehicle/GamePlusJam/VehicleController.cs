@@ -20,7 +20,7 @@ namespace Assets.RTS.Scripts.Navigation.GamePlusJam
 		public Rigidbody rb;
 		public float forwardaccel = 8f, backwardaccel = 4f, turnstrength = 180f, MaxSpeed = 50f, gravityforce = 10f;
 		[SerializeField]
-		private float speedinput, turninput; 
+		private float speedinput, turninput, turnAngle = 0.1f;
 		private bool grounded;
 
 		public LayerMask ground;
@@ -81,7 +81,7 @@ namespace Assets.RTS.Scripts.Navigation.GamePlusJam
 			}
 
 
-			if(type == VehcileType.Tank && Mathf.Abs(turninput) > 0.1f)
+			if(type == VehcileType.Tank && Mathf.Abs(turninput) > turnAngle)
 			{
 				force = Vector3.zero;
 			}

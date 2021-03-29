@@ -35,6 +35,7 @@ namespace Assets.RTS.Scripts.Selection
 			gameObject.transform.parent = selectionGraph.transform;
 			gameObject.transform.position = selectionGraph.transform.position + Vector3.right * Random.Range(-startSpread, startSpread) + Vector3.forward * Random.Range(-startSpread, startSpread);
 			sphereCollider.radius = 1.0f;
+			rb.constraints = RigidbodyConstraints.FreezeRotation;
 
 		}
 
@@ -47,7 +48,8 @@ namespace Assets.RTS.Scripts.Selection
 
 		public void SetRadius(float radius)
 		{
-			transform.localScale = Vector3.one * radius;
+			sphereCollider.radius = radius;
+			//transform.localScale = Vector3.one * radius;
 		}
 
 
