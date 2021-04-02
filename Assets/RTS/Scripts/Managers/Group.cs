@@ -17,8 +17,7 @@ public class Group
 	public float leaderRadius;
 	public float separationValue;
 	//public List<Vector3> waypoints = new List<Vector3>();
-	public List<GameObject> waypointsObj = new List<GameObject>();
-	public bool TargetReached { get; internal set; }
+ 	public bool TargetReached { get; internal set; }
 
 	//add a new member to the group
 
@@ -31,6 +30,7 @@ public class Group
 
 	}
 
+ 
 
 	public void addMember(GameObject member)
 	{
@@ -44,9 +44,9 @@ public class Group
 			orientation.y = 0f;
 		}
 
-		if (member.GetComponent<NavMeshBehaviour>().agentStats.maxSpeed < maxSpeed) //check who the slowest member of the movement group is
+		if (member.GetComponent<UnitController>().unitStats.maxSpeed < maxSpeed) //check who the slowest member of the movement group is
 		{
-			maxSpeed = member.GetComponent<NavMeshBehaviour>().agentStats.maxSpeed; //set everyone to match the slowest member's pace
+			maxSpeed = member.GetComponent<UnitController>().unitStats.maxSpeed; //set everyone to match the slowest member's pace
 		}
 
 		members.Add(member);

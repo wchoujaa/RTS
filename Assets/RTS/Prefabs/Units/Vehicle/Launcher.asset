@@ -14,3 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   color: {r: 0.25178, g: 0.3680237, b: 0.7735849, a: 0}
   unitType: 0
+  stoppingDistance: 1.7
+  maxSpeed: 20
+  radius: 1.5

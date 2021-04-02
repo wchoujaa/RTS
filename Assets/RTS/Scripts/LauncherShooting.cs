@@ -1,4 +1,5 @@
 using Assets.RTS.Scripts.Combat;
+using Assets.RTS.Scripts.Controllers;
 using Assets.RTS.Scripts.ScriptableObjects;
 using System;
 using System.Collections;
@@ -7,7 +8,7 @@ using Turrets;
 using UnityEngine;
 
 public class LauncherShooting : MonoBehaviour {
-	private PlayerUnitController unitController;
+	private UnitController unitController;
 	private CombatBehaviour combatBehaviour;
 
 	public AAPod aapod;
@@ -16,7 +17,7 @@ public class LauncherShooting : MonoBehaviour {
 
 	private void Start()
 	{
-		unitController = GetComponent<PlayerUnitController>();
+		unitController = GetComponent<UnitController>();
 		turretRotation = GetComponentInChildren<TurretRotation>();
 	}
 
