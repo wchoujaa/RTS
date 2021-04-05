@@ -421,7 +421,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6693000157482332289}
   - component: {fileID: 6693000157485250445}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: EthanBody
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1439,7 +1439,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6693000157482387955}
   - component: {fileID: 6693000157485183827}
-  m_Layer: 0
+  m_Layer: 1
   m_Name: EthanGlasses
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2931,15 +2931,30 @@ PrefabInstance:
       propertyPath: m_TargetTexture
       value: 
       objectReference: {fileID: 0}
+    - target: {fileID: 3848894307747797470, guid: 4b74cbb62ad04cb408da06be18b3544f,
+        type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 16181
+      objectReference: {fileID: 0}
     - target: {fileID: 3848894307815868468, guid: 4b74cbb62ad04cb408da06be18b3544f,
+        type: 3}
+      propertyPath: m_TargetTexture
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3848894307815868468, guid: 4b74cbb62ad04cb408da06be18b3544f,
+        type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 16181
+      objectReference: {fileID: 0}
+    - target: {fileID: 3848894307942287724, guid: 4b74cbb62ad04cb408da06be18b3544f,
         type: 3}
       propertyPath: m_TargetTexture
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 3848894307942287724, guid: 4b74cbb62ad04cb408da06be18b3544f,
         type: 3}
-      propertyPath: m_TargetTexture
-      value: 
+      propertyPath: m_CullingMask.m_Bits
+      value: 16181
       objectReference: {fileID: 0}
     - target: {fileID: 3848894308748504848, guid: 4b74cbb62ad04cb408da06be18b3544f,
         type: 3}
@@ -3005,6 +3020,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TargetTexture
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3848894308770135957, guid: 4b74cbb62ad04cb408da06be18b3544f,
+        type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 16181
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4b74cbb62ad04cb408da06be18b3544f, type: 3}

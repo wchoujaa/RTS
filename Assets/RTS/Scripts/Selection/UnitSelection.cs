@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.RTS.Scripts.Selection
 {
-	public class GlobalSelection : MonoBehaviour
+	public class UnitSelection : MonoBehaviour
 	{
 		private GraphFormation selectionGraph;
 		public GameObject target;

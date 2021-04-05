@@ -42,7 +42,7 @@ namespace Assets.RTS.Scripts.Controllers
  			combat = GetComponent<CombatBehaviour>();
 			animator = GetComponentInChildren<Animator>();
 			baseColor = colorRenderer.material.color;
-			groupManager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GroupManager>();
+			groupManager = GameObject.FindGameObjectWithTag("Manager").GetComponentInChildren<GroupManager>();
 			unitType = unitStats.unitType;
  
 			radius = unitStats.radius;
