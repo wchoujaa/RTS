@@ -119,6 +119,12 @@ namespace Assets.RTS.Scripts.Selection
 
         public GameObject pointer;
         private RaycastHit hit;
+        [Range(0,2)]
+        public int selection;
+        [Range(0, 2)] 
+        public int destination;
+        private Vector3 target; 
+        private bool dragSelect; //marquee selection flag
 
         void Start()
         {
@@ -130,56 +136,221 @@ namespace Assets.RTS.Scripts.Selection
         void Update()
         {
 
-            // If we press the left mouse button, save mouse location and begin selection
-            if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
+            //         if (Input.GetMouseButtonDown(selection) && Input.touchCount > 1 && !EventSystem.current.IsPointerOverGameObject())
+            //{
+            //             Debug.Log("Deselect");
+            //             ClearSelectedUnits();
+            //             isSelecting = false;
+
+            //         }
+            //0. when right mouse button clicked
+            if (Input.GetMouseButtonDown(destination))
             {
                 _selectableUnits = GameObject.FindGameObjectsWithTag(playerUnitTag);
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); //raycast from previous mouse pointer position
 
-                // If player clicked on a selectable unit
-                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, ground))
+                if (Physics.Raycast(ray, out hit, 50000.0f, unit)) //if we hit a unit
                 {
-                    if (hit.transform.gameObject.tag == playerUnitTag)
-                    {
-                        ClearSelectedUnits();
-                        hit.transform.gameObject.GetComponent<UnitController>().SetSelected(true);
-                        _selectedUnits.Add(hit.transform.gameObject);
-                        isSelecting = false;
-
-                        return;
-                    }
+                    //Debug.Log("clicked on a unit");
+                    target = hit.transform.position;
                 }
-                isSelecting = true;
+                else if (Physics.Raycast(ray, out hit, 50000.0f, ground)) //if we hit ground
+                {
+
+                    target = hit.point;
+                }
+                else
+                {
+                    target = Vector3.zero;
+                }
+
+
+                if (target != Vector3.zero)
+                {
+                    //Debug.Log(target.transform.position);
+                    BroadcastNewTarget(hit.point, Input.GetKey(KeyCode.LeftShift));
+                 }
+            }
+
+            // 1. when selection button clicked
+            if (Input.GetMouseButtonDown(selection))
+            {
                 mousePosition1 = Input.mousePosition;
             }
-            // If we let go of the left mouse button, end selection
-            if (Input.GetMouseButtonUp(0) && !EventSystem.current.IsPointerOverGameObject())
+
+            // 2. while selection button held
+            if (Input.GetMouseButton(selection))
             {
-                if (!isSelecting)
-                    return;
-                isSelecting = false;
-                // Find selectable gameObjects in rectangle
-                foreach (GameObject go in _selectableUnits)
-                    if (IsWithinSelectionBounds(go))
-                    {
-                        go.GetComponent<UnitController>().SetSelected(true);
-                        _selectedUnits.Add(go);
-                    }
-                    else
-                    {
-                        go.GetComponent<UnitController>().SetSelected(false);
-                        _selectedUnits.Remove(go);
-                    }
+                if ((mousePosition1 - Input.mousePosition).magnitude > 40) //if the mouse has moved a lot, then we enter marquee mode
+                {
+                    dragSelect = true;
+                    isSelecting = true;
+                }
             }
 
-            // Right mouse button : Check for new destination
-            if (Input.GetMouseButtonDown(1) && !EventSystem.current.IsPointerOverGameObject())
+
+
+
+            // 3. when selection button up
+            if (Input.GetMouseButtonUp(selection))
             {
-                if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, ground))
+
+                if (dragSelect == false) //differentiating between a rapid click cycle vs a drag-select
                 {
-                    //GameObject.Instantiate(DestinationPrefab, hit.point, Quaternion.identity).transform.eulerAngles = Vector3.left * 90;
-                    BroadcastNewTarget(hit.point, Input.GetKey(KeyCode.LeftShift));
+                    Ray ray = Camera.main.ScreenPointToRay(mousePosition1); //raycast from previous mouse pointer position
+
+                    if (Physics.Raycast(ray, out hit, 50000.0f, unit)) ///if we hit something that isn't ground
+					{
+                        UnitController unitController = hit.transform.gameObject.GetComponent<UnitController>();
+                        if (unitController.tag == playerUnitTag)
+                        {
+                            if (Input.GetKey(KeyCode.LeftShift))
+                            {
+                                _selectedUnits.Add(hit.transform.gameObject);
+
+                                //Debug.Log("Inclusive Select");
+                            }
+                            else
+                            {
+                                ClearSelectedUnits();
+                                _selectedUnits.Add(hit.transform.gameObject);
+
+
+                            }
+                        }
+
+                    }
+                    else //if we didn't hit something
+                    {
+
+                            ClearSelectedUnits();
+                    
+                    }
+
                 }
-            } 
+                else if (_selectableUnits != null) //marquee select
+                {
+                    foreach (GameObject go in _selectableUnits)
+                        if (IsWithinSelectionBounds(go))
+                        {
+                            go.GetComponent<UnitController>().SetSelected(true);
+                            _selectedUnits.Add(go);
+                        }
+                        else
+                        {
+                            go.GetComponent<UnitController>().SetSelected(false);
+                            _selectedUnits.Remove(go);
+                        }
+                }
+                dragSelect = false; 
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   //         if (Input.GetMouseButtonDown(selection) && Input.touchCount > 1 && !EventSystem.current.IsPointerOverGameObject())
+			//{
+   //             Debug.Log("Deselect");
+   //             ClearSelectedUnits();
+   //             isSelecting = false;
+
+   //         }
+   //         // If we press the left mouse button, save mouse location and begin selection
+   //         else if (Input.GetMouseButtonDown(selection) && !EventSystem.current.IsPointerOverGameObject())
+   //         {
+   //             _selectableUnits = GameObject.FindGameObjectsWithTag(playerUnitTag);
+
+   //             // If player clicked on a selectable unit
+   //             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, unit))
+   //             {
+   //                 if (hit.transform.gameObject.tag == playerUnitTag)
+   //                 {
+   //                     ClearSelectedUnits();
+   //                     hit.transform.gameObject.GetComponent<UnitController>().SetSelected(true);
+   //                     _selectedUnits.Add(hit.transform.gameObject);
+   //                     isSelecting = false;
+
+   //                     return;
+   //                 }
+   //             } 
+         
+
+   //             isSelecting = true;
+   //             mousePosition1 = Input.mousePosition;
+   //         }
+   //         // If we let go of the left mouse button, end selection
+   //         if (isSelecting &&  Input.GetMouseButtonUp(selection) && !EventSystem.current.IsPointerOverGameObject())
+   //         {
+
+   //             isSelecting = false;
+   //             // Find selectable gameObjects in rectangle
+   //             foreach (GameObject go in _selectableUnits)
+   //                 if (IsWithinSelectionBounds(go))
+   //                 {
+   //                     go.GetComponent<UnitController>().SetSelected(true);
+   //                     _selectedUnits.Add(go);
+   //                 }
+   //                 else
+   //                 {
+   //                     go.GetComponent<UnitController>().SetSelected(false);
+   //                     _selectedUnits.Remove(go);
+   //                 }
+   //         }
+
+   //         // Right mouse button : Check for new destination
+   //         if ( Input.GetMouseButtonDown(destination) && !EventSystem.current.IsPointerOverGameObject())
+   //         {
+   //             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, ground))
+   //             {
+   //                 //GameObject.Instantiate(DestinationPrefab, hit.point, Quaternion.identity).transform.eulerAngles = Vector3.left * 90;
+   //                 BroadcastNewTarget(hit.point, Input.GetKey(KeyCode.LeftShift));
+   //             }
+   //         } 
         }
 
         private void FixedUpdate()

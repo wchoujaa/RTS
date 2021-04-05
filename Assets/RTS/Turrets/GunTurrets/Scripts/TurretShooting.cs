@@ -20,7 +20,8 @@ public class TurretShooting : MonoBehaviour
 	public float Rate;
 	private UnitController unitController;
 	private CombatBehaviour combatBehaviour;
-
+	[Range(0, 2)]
+	public int shooting;
 
 	private void Start()
 	{
@@ -43,7 +44,7 @@ public class TurretShooting : MonoBehaviour
 			{
 				turretRotation.SetAimpoint(currentTarget.position);
 
-				if (turretRotation.IsLineOfSight() && !isFiring)
+				if ((turretRotation.IsLineOfSight() || Input.GetMouseButton(shooting)) && !isFiring)
 				{
 					StartCoroutine(FireBullets());
 				} 

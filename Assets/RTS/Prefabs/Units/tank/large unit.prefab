@@ -571,6 +571,7 @@ MonoBehaviour:
   velocity: 0
   isFiring: 0
   Rate: 0
+  shooting: 1
 --- !u!1 &4876700073697552371
 GameObject:
   m_ObjectHideFlags: 0

@@ -2926,6 +2926,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6693000157482334687}
     m_Modifications:
+    - target: {fileID: 3848894307747797465, guid: 4b74cbb62ad04cb408da06be18b3544f,
+        type: 3}
+      propertyPath: m_EdgeFade
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3848894307747797470, guid: 4b74cbb62ad04cb408da06be18b3544f,
         type: 3}
       propertyPath: m_TargetTexture
@@ -2946,6 +2951,11 @@ PrefabInstance:
       propertyPath: m_CullingMask.m_Bits
       value: 16181
       objectReference: {fileID: 0}
+    - target: {fileID: 3848894307815868471, guid: 4b74cbb62ad04cb408da06be18b3544f,
+        type: 3}
+      propertyPath: m_EdgeFade
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3848894307942287724, guid: 4b74cbb62ad04cb408da06be18b3544f,
         type: 3}
       propertyPath: m_TargetTexture
@@ -2955,6 +2965,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_CullingMask.m_Bits
       value: 16181
+      objectReference: {fileID: 0}
+    - target: {fileID: 3848894307942287727, guid: 4b74cbb62ad04cb408da06be18b3544f,
+        type: 3}
+      propertyPath: m_EdgeFade
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3848894308748504848, guid: 4b74cbb62ad04cb408da06be18b3544f,
         type: 3}
@@ -3015,6 +3030,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: 360 LOS
+      objectReference: {fileID: 0}
+    - target: {fileID: 3848894308770135956, guid: 4b74cbb62ad04cb408da06be18b3544f,
+        type: 3}
+      propertyPath: m_EdgeFade
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3848894308770135957, guid: 4b74cbb62ad04cb408da06be18b3544f,
         type: 3}
