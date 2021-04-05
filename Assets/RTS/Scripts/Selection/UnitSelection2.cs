@@ -25,7 +25,7 @@ namespace Assets.RTS.Scripts.Selection
         public LayerMask ground;
         public LayerMask unit;
         public string playerUnitTag;
-
+        public FollowObject cameraFollow;
         #region Selection Utility Rectangles
         static Texture2D _whiteTexture;
         private static Texture2D WhiteTexture
