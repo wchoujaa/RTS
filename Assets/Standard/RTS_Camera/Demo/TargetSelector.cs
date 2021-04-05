@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections;
 using RTS_Cam;
 using Assets.RTS.Scripts.Managers;
+using Assets.Scripts.Managers;
+using InputManager = Assets.RTS.Scripts.Managers.InputManager;
 
 [RequireComponent(typeof(RTS_Camera))]
 public class TargetSelector : MonoBehaviour

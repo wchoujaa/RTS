@@ -2,11 +2,13 @@ using Assets.RTS.Scripts.Combat;
 using Assets.RTS.Scripts.Managers;
 using Assets.RTS.Scripts.navigation;
 using Assets.RTS.Scripts.ScriptableObjects;
+using Assets.Scripts.Managers;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using InputManager = Assets.RTS.Scripts.Managers.InputManager;
 
 namespace Assets.RTS.Scripts.Controllers
 {
@@ -32,7 +34,7 @@ namespace Assets.RTS.Scripts.Controllers
 		private Color baseColor;
 		public UnitType unitType;
  		private float radius;
-
+		public int team;
 		virtual protected void Start()
 		{
 			//selectUI = transform.Find("Highlight").gameObject;
