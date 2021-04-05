@@ -2029,16 +2029,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: AIThirdPersonController
       objectReference: {fileID: 0}
-    - target: {fileID: 6693000157482006575, guid: 1608e71fa70001e45b2c14d0dcef7e84,
-        type: 3}
-      propertyPath: m_Layer
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6693000157482065463, guid: 1608e71fa70001e45b2c14d0dcef7e84,
-        type: 3}
-      propertyPath: m_Layer
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 6693000157482334687, guid: 1608e71fa70001e45b2c14d0dcef7e84,
         type: 3}
       propertyPath: m_LocalPosition.x
