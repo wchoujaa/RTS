@@ -26,6 +26,7 @@ public class TurretShooting : MonoBehaviour
 	{
 		combatBehaviour = GetComponent<CombatBehaviour>();
 		unitController = GetComponentInParent<UnitController>();
+		combatStat = combatBehaviour.combatStats;
 	}
 
 	private void Update()

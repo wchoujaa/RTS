@@ -1,4 +1,5 @@
 ﻿using Assets.RTS.Scripts.Controllers;
+using LOS;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -20,7 +21,8 @@ namespace Assets.RTS.Scripts.Combat
 		public LayerMask unit;
 		private bool takingDamage = false;
 		// Start is called before the first frame update
-
+		private GameObject pointer;
+		public string pointerTag = "Pointer";
 
 		void Start()
 		{
@@ -28,7 +30,9 @@ namespace Assets.RTS.Scripts.Combat
 			attackTimer = combatStats.rate;
 			health = combatStats.health;
 			unitController = GetComponent<UnitController>();
- 
+			pointer = GameObject.FindGameObjectWithTag(pointerTag);
+
+
 		}
 
 		private void Update()
@@ -36,7 +40,7 @@ namespace Assets.RTS.Scripts.Combat
 			attackTimer += Time.deltaTime;
 
 			if (target != null)
-			{ 
+			{
 				Attack();
 			}
 		}
@@ -44,24 +48,31 @@ namespace Assets.RTS.Scripts.Combat
 
 		private void FixedUpdate()
 		{
-			AcquireTarget();
+			if (unitController.IsSelected)
+				SetNewTarget(pointer.transform);
+			else 
+				AcquireTarget();
+
+
 		}
 
 		private void AcquireTarget()
 		{
+			Cancel();
+
 			Collider[] hitColliders = Physics.OverlapSphere(transform.position, combatStats.range, unit);
 			var distance = Mathf.Infinity;
-			Cancel();
 			foreach (var hitCollider in hitColliders)
 			{
 				var target = hitCollider.GetComponent<UnitController>();
+				var collider = hitCollider.GetComponentInChildren<LOSCuller>();
 				var newDist = (transform.position - target.transform.position).magnitude;
-				if (target.team != unitController.team && newDist < distance)
+				if (target.team != unitController.team && newDist < distance && collider != null &&  collider.Visibile)
 				{
 					SetNewTarget(hitCollider.transform);
 					distance = newDist;
 				}
-			} 
+			}
 		}
 
 
@@ -84,9 +95,9 @@ namespace Assets.RTS.Scripts.Combat
 
 		}
 
-		public void SetNewTarget(Transform enemy)
+		public void SetNewTarget(Transform target)
 		{
-			target = enemy;
+			this.target = target;
 			Vector3 position = target.position;
 			Vector3 aimTarget = new Vector3();
 			aimTarget.Set(position.x, position.y, position.z);
@@ -96,7 +107,7 @@ namespace Assets.RTS.Scripts.Combat
 		public void TakeDamage(CombatBehaviour enemy)
 		{
 			health -= enemy.combatStats.damage;
-			if(!takingDamage)
+			if (!takingDamage)
 				StartCoroutine(Flasher(unitController.colorRenderer.material.color));
 		}
 
@@ -118,7 +129,7 @@ namespace Assets.RTS.Scripts.Combat
 		{
 			targetAcquired = false;
 			target = null;
-			
+
 		}
 
 		public bool IsEnemy(CombatBehaviour unit)

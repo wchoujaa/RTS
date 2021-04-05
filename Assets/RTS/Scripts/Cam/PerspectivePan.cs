@@ -21,7 +21,7 @@ public class PerspectivePan : MonoBehaviour
         if (Input.GetMouseButton(mousebutton))
         {
             Vector3 direction = touchStart - GetWorldPosition();
-            Debug.Log(direction);
+            //Debug.Log(direction);
 
             transform.position += direction;
         }

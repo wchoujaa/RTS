@@ -116,14 +116,19 @@ namespace Assets.RTS.Scripts.Selection
         }
         #endregion Selection Utility Rectangles
 
+
+        public GameObject pointer;
+        private RaycastHit hit;
+
         void Start()
         {
             _selectedUnits = new List<GameObject>();
+            pointer.transform.parent = null;
+ 
         }
 
         void Update()
         {
-            RaycastHit hit;
 
             // If we press the left mouse button, save mouse location and begin selection
             if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject())
@@ -174,8 +179,31 @@ namespace Assets.RTS.Scripts.Selection
                     //GameObject.Instantiate(DestinationPrefab, hit.point, Quaternion.identity).transform.eulerAngles = Vector3.left * 90;
                     BroadcastNewTarget(hit.point, Input.GetKey(KeyCode.LeftShift));
                 }
+            } 
+        }
+
+        private void FixedUpdate()
+        {
+            //4. Is Mouse hovering
+            if (_selectedUnits.Count != 0)
+            {
+                pointer.SetActive(true);
+
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); //raycast from   mouse pointer position
+
+                if (Physics.Raycast(ray, out hit, 50000.0f, ground)) //if we hit ground
+                {
+                    pointer.transform.position = hit.point;
+                }
+            } else
+			{
+                pointer.SetActive(false);
+
             }
         }
+
+
+
 
         /// <summary>
         /// Mark all selected units as unselected

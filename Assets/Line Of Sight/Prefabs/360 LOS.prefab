@@ -63,7 +63,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 16179
   m_RenderingPath: 0
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -92,12 +92,12 @@ MonoBehaviour:
   m_MaskInvert: 0
   m_RenderTargetWidth: 512
   m_RenderTargetHeight: 512
-  m_DistanceFade: 0.134
-  m_EdgeFade: 0
+  m_DistanceFade: 1
+  m_EdgeFade: 1
   m_ExcludeBackfaces: 1
-  m_BackfacesFade: 0.127
-  m_MinVariance: 1
-  m_OutOfBoundArea: 1
+  m_BackfacesFade: 0
+  m_MinVariance: 0
+  m_OutOfBoundArea: 0
 --- !u!1 &3848894307815868465
 GameObject:
   m_ObjectHideFlags: 0
@@ -161,7 +161,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 16179
   m_RenderingPath: 0
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -190,12 +190,12 @@ MonoBehaviour:
   m_MaskInvert: 0
   m_RenderTargetWidth: 512
   m_RenderTargetHeight: 512
-  m_DistanceFade: 0.134
-  m_EdgeFade: 0
+  m_DistanceFade: 1
+  m_EdgeFade: 1
   m_ExcludeBackfaces: 1
-  m_BackfacesFade: 0.127
-  m_MinVariance: 1
-  m_OutOfBoundArea: 1
+  m_BackfacesFade: 0
+  m_MinVariance: 0
+  m_OutOfBoundArea: 0
 --- !u!1 &3848894307942287721
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,7 +259,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 16179
   m_RenderingPath: 0
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -288,12 +288,12 @@ MonoBehaviour:
   m_MaskInvert: 0
   m_RenderTargetWidth: 512
   m_RenderTargetHeight: 512
-  m_DistanceFade: 0.134
-  m_EdgeFade: 0
+  m_DistanceFade: 1
+  m_EdgeFade: 1
   m_ExcludeBackfaces: 1
-  m_BackfacesFade: 0.127
-  m_MinVariance: 1
-  m_OutOfBoundArea: 1
+  m_BackfacesFade: 0
+  m_MinVariance: 0
+  m_OutOfBoundArea: 0
 --- !u!1 &3848894308748504851
 GameObject:
   m_ObjectHideFlags: 0
@@ -391,7 +391,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 16179
   m_RenderingPath: 0
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -420,9 +420,9 @@ MonoBehaviour:
   m_MaskInvert: 0
   m_RenderTargetWidth: 512
   m_RenderTargetHeight: 512
-  m_DistanceFade: 0.134
-  m_EdgeFade: 0
+  m_DistanceFade: 1
+  m_EdgeFade: 1
   m_ExcludeBackfaces: 1
-  m_BackfacesFade: 0.127
-  m_MinVariance: 1
-  m_OutOfBoundArea: 1
+  m_BackfacesFade: 0
+  m_MinVariance: 0
+  m_OutOfBoundArea: 0

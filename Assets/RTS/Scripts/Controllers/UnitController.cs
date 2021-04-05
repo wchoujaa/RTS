@@ -100,7 +100,8 @@ namespace Assets.RTS.Scripts.Controllers
 
 			//Color color = colorRenderer.material.GetColor("Albedo");
 			//color.a = (isSelected) ? 1f : 0f;
-			colorRenderer.material.color = Color.green;
+			Color color = (isSelected) ? Color.green : baseColor;
+			colorRenderer.material.color = color;
 			//Debug.Log(colorRenderer.material.GetColor("_OutlineColor"));
 		}
 
