@@ -11,18 +11,27 @@ namespace Assets.RTS.Scripts.Managers
 	public class InputManager : MonoBehaviour
 	{
 		public DoubleClicker doubleE;
+        public DoubleClicker doubleMouse0;
+        public DoubleClicker doubleMouse1;
+
         float clicked = 0;
         float clicktime = 0;
         float clickdelay = 0.5f;
+
+
         private void Start()
 		{
-			doubleE = new DoubleClicker(KeyCode.E); 
-		}
+			doubleE = new DoubleClicker(KeyCode.E);
+            doubleMouse0 = new DoubleClicker(KeyCode.Mouse0);
+            doubleMouse1 = new DoubleClicker(KeyCode.Mouse1);
+        }
 
 		private void Update()
 		{
-			doubleE.Update(); 
-		}
+			doubleE.Update();
+            doubleMouse0.Update();
+            doubleMouse1.Update();
+        }
 
 
         public  bool DoubleClick()

@@ -1,4 +1,5 @@
 ﻿using Assets.RTS.Scripts.Controllers;
+using Assets.RTS.Scripts.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,13 +10,13 @@ using UnityEngine.EventSystems;
 
 namespace Assets.RTS.Scripts.Selection
 {
-	class UnitSelection2 : MonoBehaviour
-	{
+    class UnitSelection2 : MonoBehaviour
+    {
 
         // GUI Rect Source code found at:
         // http://hyunkell.com/blog/rts-style-unit-selection-in-unity-5/
 
-       // public GameObject DestinationPrefab;
+        // public GameObject DestinationPrefab;
 
         // Currently selected objects
         private List<GameObject> _selectedUnits;
@@ -26,6 +27,7 @@ namespace Assets.RTS.Scripts.Selection
         public LayerMask unit;
         public string playerUnitTag;
         public FollowObject cameraFollow;
+
         #region Selection Utility Rectangles
         static Texture2D _whiteTexture;
         private static Texture2D WhiteTexture
@@ -104,7 +106,7 @@ namespace Assets.RTS.Scripts.Selection
 
         void OnGUI()
         {
-            if (isSelecting)
+            if (dragSelect)
             {
                 // Create a rect from both mouse positions
                 var rect = GetScreenRect(mousePosition1, Input.mousePosition);
@@ -119,30 +121,31 @@ namespace Assets.RTS.Scripts.Selection
 
         public GameObject pointer;
         private RaycastHit hit;
-        [Range(0,2)]
+        [Range(0, 2)]
         public int selection;
-        [Range(0, 2)] 
+        [Range(0, 2)]
         public int destination;
-        private Vector3 target; 
+        private Vector3 target;
         private bool dragSelect; //marquee selection flag
-
+        private InputManager inputManager;
         void Start()
         {
+            inputManager = FindObjectOfType<InputManager>();
+
             _selectedUnits = new List<GameObject>();
             pointer.transform.parent = null;
- 
         }
 
         void Update()
         {
-
-            //         if (Input.GetMouseButtonDown(selection) && Input.touchCount > 1 && !EventSystem.current.IsPointerOverGameObject())
-            //{
-            //             Debug.Log("Deselect");
-            //             ClearSelectedUnits();
-            //             isSelecting = false;
-
-            //         }
+            if (selection == 0 && inputManager.doubleMouse0.DoubleClickLongPressedCheck())
+            {
+                ClearSelectedUnits();
+            }
+            else if (selection == 1 && inputManager.doubleMouse0.DoubleClickLongPressedCheck())
+            {
+                ClearSelectedUnits();
+            }
             //0. when right mouse button clicked
             if (Input.GetMouseButtonDown(destination))
             {
@@ -163,13 +166,11 @@ namespace Assets.RTS.Scripts.Selection
                 {
                     target = Vector3.zero;
                 }
-
-
                 if (target != Vector3.zero)
                 {
                     //Debug.Log(target.transform.position);
                     BroadcastNewTarget(hit.point, Input.GetKey(KeyCode.LeftShift));
-                 }
+                }
             }
 
             // 1. when selection button clicked
@@ -184,7 +185,6 @@ namespace Assets.RTS.Scripts.Selection
                 if ((mousePosition1 - Input.mousePosition).magnitude > 40) //if the mouse has moved a lot, then we enter marquee mode
                 {
                     dragSelect = true;
-                    isSelecting = true;
                 }
             }
 
@@ -195,40 +195,24 @@ namespace Assets.RTS.Scripts.Selection
             if (Input.GetMouseButtonUp(selection))
             {
 
-                if (dragSelect == false) //differentiating between a rapid click cycle vs a drag-select
+                if (dragSelect == false) // mouse click event
                 {
                     Ray ray = Camera.main.ScreenPointToRay(mousePosition1); //raycast from previous mouse pointer position
 
-                    if (Physics.Raycast(ray, out hit, 50000.0f, unit)) ///if we hit something that isn't ground
+                    if (Physics.Raycast(ray, out hit, 50000.0f, unit)) ///if we hit a unit
 					{
                         UnitController unitController = hit.transform.gameObject.GetComponent<UnitController>();
                         if (unitController.tag == playerUnitTag)
                         {
-                            if (Input.GetKey(KeyCode.LeftShift))
-                            {
-                                _selectedUnits.Add(hit.transform.gameObject);
-
-                                //Debug.Log("Inclusive Select");
-                            }
-                            else
+                            if (!Input.GetKey(KeyCode.LeftShift))
                             {
                                 ClearSelectedUnits();
-                                _selectedUnits.Add(hit.transform.gameObject);
-
-
                             }
+                            _selectedUnits.Add(hit.transform.gameObject);
                         }
-
                     }
-                    else //if we didn't hit something
-                    {
-
-                            ClearSelectedUnits();
-                    
-                    }
-
                 }
-                else if (_selectableUnits != null) //marquee select
+                else if (_selectableUnits != null) // drag event
                 {
                     foreach (GameObject go in _selectableUnits)
                         if (IsWithinSelectionBounds(go))
@@ -242,115 +226,67 @@ namespace Assets.RTS.Scripts.Selection
                             _selectedUnits.Remove(go);
                         }
                 }
-                dragSelect = false; 
-
+                dragSelect = false;
             }
 
+            //         if (Input.GetMouseButtonDown(selection) && Input.touchCount > 1 && !EventSystem.current.IsPointerOverGameObject())
+            //{
+            //             Debug.Log("Deselect");
+            //             ClearSelectedUnits();
+            //             isSelecting = false;
+
+            //         }
+            //         // If we press the left mouse button, save mouse location and begin selection
+            //         else if (Input.GetMouseButtonDown(selection) && !EventSystem.current.IsPointerOverGameObject())
+            //         {
+            //             _selectableUnits = GameObject.FindGameObjectsWithTag(playerUnitTag);
+
+            //             // If player clicked on a selectable unit
+            //             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, unit))
+            //             {
+            //                 if (hit.transform.gameObject.tag == playerUnitTag)
+            //                 {
+            //                     ClearSelectedUnits();
+            //                     hit.transform.gameObject.GetComponent<UnitController>().SetSelected(true);
+            //                     _selectedUnits.Add(hit.transform.gameObject);
+            //                     isSelecting = false;
+
+            //                     return;
+            //                 }
+            //             } 
 
 
+            //             isSelecting = true;
+            //             mousePosition1 = Input.mousePosition;
+            //         }
+            //         // If we let go of the left mouse button, end selection
+            //         if (isSelecting &&  Input.GetMouseButtonUp(selection) && !EventSystem.current.IsPointerOverGameObject())
+            //         {
 
+            //             isSelecting = false;
+            //             // Find selectable gameObjects in rectangle
+            //             foreach (GameObject go in _selectableUnits)
+            //                 if (IsWithinSelectionBounds(go))
+            //                 {
+            //                     go.GetComponent<UnitController>().SetSelected(true);
+            //                     _selectedUnits.Add(go);
+            //                 }
+            //                 else
+            //                 {
+            //                     go.GetComponent<UnitController>().SetSelected(false);
+            //                     _selectedUnits.Remove(go);
+            //                 }
+            //         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-   //         if (Input.GetMouseButtonDown(selection) && Input.touchCount > 1 && !EventSystem.current.IsPointerOverGameObject())
-			//{
-   //             Debug.Log("Deselect");
-   //             ClearSelectedUnits();
-   //             isSelecting = false;
-
-   //         }
-   //         // If we press the left mouse button, save mouse location and begin selection
-   //         else if (Input.GetMouseButtonDown(selection) && !EventSystem.current.IsPointerOverGameObject())
-   //         {
-   //             _selectableUnits = GameObject.FindGameObjectsWithTag(playerUnitTag);
-
-   //             // If player clicked on a selectable unit
-   //             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, unit))
-   //             {
-   //                 if (hit.transform.gameObject.tag == playerUnitTag)
-   //                 {
-   //                     ClearSelectedUnits();
-   //                     hit.transform.gameObject.GetComponent<UnitController>().SetSelected(true);
-   //                     _selectedUnits.Add(hit.transform.gameObject);
-   //                     isSelecting = false;
-
-   //                     return;
-   //                 }
-   //             } 
-         
-
-   //             isSelecting = true;
-   //             mousePosition1 = Input.mousePosition;
-   //         }
-   //         // If we let go of the left mouse button, end selection
-   //         if (isSelecting &&  Input.GetMouseButtonUp(selection) && !EventSystem.current.IsPointerOverGameObject())
-   //         {
-
-   //             isSelecting = false;
-   //             // Find selectable gameObjects in rectangle
-   //             foreach (GameObject go in _selectableUnits)
-   //                 if (IsWithinSelectionBounds(go))
-   //                 {
-   //                     go.GetComponent<UnitController>().SetSelected(true);
-   //                     _selectedUnits.Add(go);
-   //                 }
-   //                 else
-   //                 {
-   //                     go.GetComponent<UnitController>().SetSelected(false);
-   //                     _selectedUnits.Remove(go);
-   //                 }
-   //         }
-
-   //         // Right mouse button : Check for new destination
-   //         if ( Input.GetMouseButtonDown(destination) && !EventSystem.current.IsPointerOverGameObject())
-   //         {
-   //             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, ground))
-   //             {
-   //                 //GameObject.Instantiate(DestinationPrefab, hit.point, Quaternion.identity).transform.eulerAngles = Vector3.left * 90;
-   //                 BroadcastNewTarget(hit.point, Input.GetKey(KeyCode.LeftShift));
-   //             }
-   //         } 
+            //         // Right mouse button : Check for new destination
+            //         if ( Input.GetMouseButtonDown(destination) && !EventSystem.current.IsPointerOverGameObject())
+            //         {
+            //             if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out hit, ground))
+            //             {
+            //                 //GameObject.Instantiate(DestinationPrefab, hit.point, Quaternion.identity).transform.eulerAngles = Vector3.left * 90;
+            //                 BroadcastNewTarget(hit.point, Input.GetKey(KeyCode.LeftShift));
+            //             }
+            //         } 
         }
 
         private void FixedUpdate()
@@ -364,12 +300,14 @@ namespace Assets.RTS.Scripts.Selection
 
                 if (Physics.Raycast(ray, out hit, 50000.0f, ground)) //if we hit ground
                 {
-                    pointer.transform.position = hit.point;
+                    Vector3 point = hit.point;
+                    
+                    pointer.transform.position = point;
                 }
-            } else
-			{
-                pointer.SetActive(false);
-
+            }
+            else
+            {
+                pointer.SetActive(false); 
             }
         }
 

@@ -99,7 +99,7 @@ namespace Assets.RTS.Scripts.Controllers
 		}
 
 
-		public bool DoubleClickLongPressedCheak()
+		public bool DoubleClickLongPressedCheck()
 		{
 			  
 			return doubleTapped;

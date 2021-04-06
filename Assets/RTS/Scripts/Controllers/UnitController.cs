@@ -73,7 +73,7 @@ namespace Assets.RTS.Scripts.Controllers
 
 			if (IsSelected && isGroupLeader)
 			{
-				if (inputManager.doubleE.DoubleClickLongPressedCheak())
+				if (inputManager.doubleE.DoubleClickLongPressedCheck())
 				{
 					//flocking.SpreadUnit(-flocking.flockingStats.spreadAmount);
 

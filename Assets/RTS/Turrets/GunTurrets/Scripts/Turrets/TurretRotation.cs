@@ -148,8 +148,7 @@ namespace Turrets
 			if (aiming)
 			{
 				RotateBase();
-				RotateBarrels();
-				IsLineOfSight();
+				RotateBarrels(); 
 			}
 			else if (!atRest)
 			{
@@ -211,12 +210,9 @@ namespace Turrets
 				Quaternion newRotation = Quaternion.RotateTowards(turretBarrels.localRotation, rotationGoal, 2.0f * turnRate * Time.deltaTime);
 
 				// Set the new rotation of the barrels.
-				turretBarrels.localRotation = newRotation;
-
+				turretBarrels.localRotation = newRotation; 
 			}
-		}
-
-
+		}  
 
 		public bool IsLineOfSight()
 		{
@@ -226,15 +222,12 @@ namespace Turrets
 
 			// Perform the raycast against gameobjects on the shootable layer and if it hits something...
 			if (Physics.Raycast(shootRay, out shootHit, combatBehaviour.combatStats.range, combatBehaviour.unit))
-			{
-				CombatBehaviour unit = shootHit.transform.gameObject.GetComponent<CombatBehaviour>();
-
-				if (combatBehaviour.IsEnemy(unit))
+			{ 
+				if (shootHit.transform.gameObject == combatBehaviour.target.gameObject)
 				{
 					isInLineOfSight = true;
 				}
-			}
-
+			} 
 			return isInLineOfSight;
 		}
 
