@@ -43,7 +43,7 @@ namespace Turrets
 		public bool aiming = false;
 		public bool atRest = false;
 		public bool isInLineOfSight = false;
- 
+
 
 		Ray shootRay;                                   // A ray from the gun end forwards.
 		RaycastHit shootHit;                            // A raycast hit to get information about what was hit.
@@ -64,7 +64,7 @@ namespace Turrets
 		private void Start()
 		{
 			combatBehaviour = GetComponentInParent<CombatBehaviour>();
- 			if (aiming == false)
+			if (aiming == false)
 				aimPoint = transform.TransformPoint(Vector3.forward * 100.0f);
 		}
 
@@ -148,7 +148,7 @@ namespace Turrets
 			if (aiming)
 			{
 				RotateBase();
-				RotateBarrels(); 
+				RotateBarrels();
 			}
 			else if (!atRest)
 			{
@@ -210,9 +210,9 @@ namespace Turrets
 				Quaternion newRotation = Quaternion.RotateTowards(turretBarrels.localRotation, rotationGoal, 2.0f * turnRate * Time.deltaTime);
 
 				// Set the new rotation of the barrels.
-				turretBarrels.localRotation = newRotation; 
+				turretBarrels.localRotation = newRotation;
 			}
-		}  
+		}
 
 		public bool IsLineOfSight()
 		{
@@ -222,12 +222,22 @@ namespace Turrets
 
 			// Perform the raycast against gameobjects on the shootable layer and if it hits something...
 			if (Physics.Raycast(shootRay, out shootHit, combatBehaviour.combatStats.range, combatBehaviour.unit))
-			{ 
+			{
 				if (shootHit.transform.gameObject == combatBehaviour.target.gameObject)
 				{
 					isInLineOfSight = true;
 				}
-			} 
+			}
+
+			if (Physics.Raycast(shootRay, out shootHit, combatBehaviour.combatStats.range, combatBehaviour.pointerLayer))
+			{
+				if (shootHit.transform.gameObject == combatBehaviour.target.gameObject)
+				{
+					isInLineOfSight = true;
+				}
+			}
+			//isInLineOfSight = true;
+
 			return isInLineOfSight;
 		}
 

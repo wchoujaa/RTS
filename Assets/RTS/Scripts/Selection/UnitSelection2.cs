@@ -22,6 +22,7 @@ namespace Assets.RTS.Scripts.Selection
         private List<GameObject> _selectedUnits;
         // Friendly (selectable) vehicles
         private GameObject[] _selectableUnits;
+        [Tooltip("Mouse Input Setting")]
 
         public LayerMask ground;
         public LayerMask unit;
@@ -121,6 +122,8 @@ namespace Assets.RTS.Scripts.Selection
 
         public GameObject pointer;
         private RaycastHit hit;
+        [Tooltip("Mouse Input Setting")]
+
         [Range(0, 2)]
         public int selection;
         [Range(0, 2)]
@@ -128,6 +131,10 @@ namespace Assets.RTS.Scripts.Selection
         private Vector3 target;
         private bool dragSelect; //marquee selection flag
         private InputManager inputManager;
+        [Tooltip("Drag Setting")]
+        private float timer = 0f;
+        public float drag_delay = 0.1f;
+        public float drag_magnitude = 30;
         void Start()
         {
             inputManager = FindObjectOfType<InputManager>();
@@ -138,6 +145,7 @@ namespace Assets.RTS.Scripts.Selection
 
         void Update()
         {
+            timer += Time.deltaTime;
             if (selection == 0 && inputManager.doubleMouse0.DoubleClickLongPressedCheck())
             {
                 ClearSelectedUnits();
@@ -146,31 +154,12 @@ namespace Assets.RTS.Scripts.Selection
             {
                 ClearSelectedUnits();
             }
+
+
             //0. when right mouse button clicked
             if (Input.GetMouseButtonDown(destination))
             {
-                _selectableUnits = GameObject.FindGameObjectsWithTag(playerUnitTag);
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); //raycast from previous mouse pointer position
-
-                if (Physics.Raycast(ray, out hit, 50000.0f, unit)) //if we hit a unit
-                {
-                    //Debug.Log("clicked on a unit");
-                    target = hit.transform.position;
-                }
-                else if (Physics.Raycast(ray, out hit, 50000.0f, ground)) //if we hit ground
-                {
-
-                    target = hit.point;
-                }
-                else
-                {
-                    target = Vector3.zero;
-                }
-                if (target != Vector3.zero)
-                {
-                    //Debug.Log(target.transform.position);
-                    BroadcastNewTarget(hit.point, Input.GetKey(KeyCode.LeftShift));
-                }
+                timer = 0;
             }
 
             // 1. when selection button clicked
@@ -182,14 +171,14 @@ namespace Assets.RTS.Scripts.Selection
             // 2. while selection button held
             if (Input.GetMouseButton(selection))
             {
-                if ((mousePosition1 - Input.mousePosition).magnitude > 40) //if the mouse has moved a lot, then we enter marquee mode
+                if ((mousePosition1 - Input.mousePosition).magnitude > drag_magnitude) //if the mouse has moved a lot, then we enter marquee mode
                 {
                     dragSelect = true;
-                }
-            }
-
-
-
+                } else if(timer > drag_delay)
+				{
+                    HandleTarget();
+				}
+            } 
 
             // 3. when selection button up
             if (Input.GetMouseButtonUp(selection))
@@ -202,7 +191,7 @@ namespace Assets.RTS.Scripts.Selection
                     if (Physics.Raycast(ray, out hit, 50000.0f, unit)) ///if we hit a unit
 					{
                         UnitController unitController = hit.transform.gameObject.GetComponent<UnitController>();
-                        if (unitController.tag == playerUnitTag)
+                        if (unitController != null && unitController.tag == playerUnitTag)
                         {
                             if (!Input.GetKey(KeyCode.LeftShift))
                             {
@@ -311,6 +300,32 @@ namespace Assets.RTS.Scripts.Selection
             }
         }
 
+
+        private void HandleTarget()
+		{
+            _selectableUnits = GameObject.FindGameObjectsWithTag(playerUnitTag);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); //raycast from previous mouse pointer position
+
+            if (Physics.Raycast(ray, out hit, 50000.0f, unit)) //if we hit a unit
+            {
+                //Debug.Log("clicked on a unit");
+                target = hit.transform.position;
+            }
+            else if (Physics.Raycast(ray, out hit, 50000.0f, ground)) //if we hit ground
+            {
+
+                target = hit.point;
+            }
+            else
+            {
+                target = Vector3.zero;
+            }
+            if (target != Vector3.zero)
+            {
+                //Debug.Log(target.transform.position);
+                BroadcastNewTarget(hit.point, Input.GetKey(KeyCode.LeftShift));
+            }
+        }
 
 
 

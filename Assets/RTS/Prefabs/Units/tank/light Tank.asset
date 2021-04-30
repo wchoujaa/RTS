@@ -15,4 +15,4 @@ MonoBehaviour:
   damage: 0
   health: 100
   range: 200
-  rate: 3
+  rate: 0.23

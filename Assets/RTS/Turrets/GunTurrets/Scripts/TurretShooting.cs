@@ -43,7 +43,7 @@ public class TurretShooting : MonoBehaviour
 			{
 				turretRotation.SetAimpoint(currentTarget.position);
 
-				if (turretRotation.IsLineOfSight() && !isFiring)
+				if (turretRotation.IsLineOfSight() && !isFiring && combatBehaviour.isAttacking)
 				{
 					StartCoroutine(FireBullets());
 				} 

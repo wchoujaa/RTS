@@ -510,7 +510,7 @@ MonoBehaviour:
   gravityforce: 10
   speedinput: 0
   turninput: 0
-  turnAngle: 0.1
+  turnAngle: 0.25
   ground:
     serializedVersion: 2
     m_Bits: 1024
@@ -552,7 +552,13 @@ MonoBehaviour:
   unit:
     serializedVersion: 2
     m_Bits: 512
+  pointerLayer:
+    serializedVersion: 2
+    m_Bits: 16793600
   pointerTag: Pointer
+  debug: 1
+  AttackButton: 1
+  isAttacking: 0
 --- !u!114 &3691963385228873499
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2668,6 +2674,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3277983387473615674, guid: a6046b3b00f664940b5f0f109e80244d,
+        type: 3}
+      propertyPath: fireDelay
+      value: 0.01
       objectReference: {fileID: 0}
     - target: {fileID: 3325673956790763319, guid: a6046b3b00f664940b5f0f109e80244d,
         type: 3}
