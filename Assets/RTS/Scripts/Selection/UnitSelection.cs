@@ -1,335 +1,303 @@
-using Assets.RTS.Scripts.Controllers;
-using Assets.RTS.Scripts.Selection.Formation;
+﻿using Assets.RTS.Scripts.Controllers;
+using Assets.RTS.Scripts.Managers;
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Assets.RTS.Scripts.Selection
 {
-	public class UnitSelection : MonoBehaviour
-	{
-		private GraphFormation selectionGraph;
-		public GameObject target;
+    class UnitSelection : MonoBehaviour
+    {
 
-		SelectedDictionary selectedTable;
-		RaycastHit hit;
+        // GUI Rect Source code found at:
+        // http://hyunkell.com/blog/rts-style-unit-selection-in-unity-5/
 
-		bool dragSelect; //marquee selection flag
+        // public GameObject DestinationPrefab;
 
-		//COLLIDER VARIABLES
-		//====================================================================================================
+        // Currently selected objects
+        private List<GameObject> _selectedUnits;
+        // Friendly (selectable) vehicles
+        private GameObject[] _selectableUnits;
+        [Tooltip("Mouse Input Setting")]
 
-		MeshCollider selectionBox;    //use this to detect selected objects
-		Mesh selectionMesh;
+        public LayerMask ground;
+        public LayerMask unit;
+        public string playerUnitTag;
+        public FollowObject cameraFollow;
 
-		//the bounds of our marquee object
-		Vector3 p1;
-		Vector3 p2;
+        #region Selection Utility Rectangles
+        static Texture2D _whiteTexture;
+        private static Texture2D WhiteTexture
+        {
+            get
+            {
+                if (_whiteTexture == null)
+                {
+                    _whiteTexture = new Texture2D(1, 1);
+                    _whiteTexture.SetPixel(0, 0, Color.white);
+                    _whiteTexture.Apply();
+                }
 
-		//corners in 2D
-		Vector2[] corners;
-
-		//vertices of our box
-		Vector3[] verts;
-
-
-		public LayerMask ground;
-		public LayerMask unit;
-		public string playerUnitTag;
- 		public bool debug = false;
- 
-		void Start()
-		{
-			selectionGraph = GetComponentInChildren<GraphFormation>();
-			selectedTable = gameObject.GetComponent<SelectedDictionary>();
-			dragSelect = false;
-			target = new GameObject("Selection pointer");
-		}
-
-		// Update is called once per frame
-		void Update()
-		{
-			 
+                return _whiteTexture;
+            }
+        }
 
 
+        private static Rect GetScreenRect(Vector3 screenPosition1, Vector3 screenPosition2)
+        {
+            // Move origin from bottom left to top left
+            screenPosition1.y = Screen.height - screenPosition1.y;
+            screenPosition2.y = Screen.height - screenPosition2.y;
+            // Calculate corners
+            var topLeft = Vector3.Min(screenPosition1, screenPosition2);
+            var bottomRight = Vector3.Max(screenPosition1, screenPosition2);
+            // Create Rect
+            return Rect.MinMaxRect(topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
+        }
+
+        private static void DrawScreenRect(Rect rect, Color color)
+        {
+            GUI.color = color;
+            GUI.DrawTexture(rect, WhiteTexture);
+            GUI.color = Color.white;
+        }
+
+        private static void DrawScreenRectBorder(Rect rect, float thickness, Color color)
+        {
+            // Top
+            DrawScreenRect(new Rect(rect.xMin, rect.yMin, rect.width, thickness), color);
+            // Left
+            DrawScreenRect(new Rect(rect.xMin, rect.yMin, thickness, rect.height), color);
+            // Right
+            DrawScreenRect(new Rect(rect.xMax - thickness, rect.yMin, thickness, rect.height), color);
+            // Bottom
+            DrawScreenRect(new Rect(rect.xMin, rect.yMax - thickness, rect.width, thickness), color);
+        }
+
+        private static Bounds GetViewportBounds(Camera camera, Vector3 screenPosition1, Vector3 screenPosition2)
+        {
+            var v1 = Camera.main.ScreenToViewportPoint(screenPosition1);
+            var v2 = Camera.main.ScreenToViewportPoint(screenPosition2);
+            var min = Vector3.Min(v1, v2);
+            var max = Vector3.Max(v1, v2);
+            min.z = camera.nearClipPlane;
+            max.z = camera.farClipPlane;
+
+            var bounds = new Bounds();
+            bounds.SetMinMax(min, max);
+            return bounds;
+        }
+
+        bool isSelecting = false;
+        Vector3 mousePosition1;
+
+        private bool IsWithinSelectionBounds(GameObject gameObject)
+        {
+            var camera = Camera.main;
+            var viewportBounds =
+                GetViewportBounds(camera, mousePosition1, Input.mousePosition);
+
+            return viewportBounds.Contains(
+                camera.WorldToViewportPoint(gameObject.transform.position));
+        }
+
+        void OnGUI()
+        {
+            if (dragSelect)
+            {
+                // Create a rect from both mouse positions
+                var rect = GetScreenRect(mousePosition1, Input.mousePosition);
+                // Draw transparent rectangle
+                DrawScreenRect(rect, new Color(0.8f, 0.8f, 0.95f, 0.25f));
+                // Draw rectangle border
+                DrawScreenRectBorder(rect, 2, new Color(0.8f, 0.8f, 0.95f));
+            }
+        }
+        #endregion Selection Utility Rectangles
 
 
-			//0. when right mouse button clicked
-			if (Input.GetMouseButtonDown(1))
-			{
+        public GameObject pointer;
+        private RaycastHit hit;
+        [Tooltip("Mouse Input Setting")]
 
-				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); //raycast from previous mouse pointer position
+        [Range(0, 2)]
+        public int selection;
+        [Range(0, 2)]
+        public int destination;
+        private Vector3 target;
+        private bool dragSelect; //marquee selection flag
+        private InputManager inputManager;
+        [Tooltip("Drag Setting")]
+        private float timer = 0f;
+        public float drag_delay = 0.1f;
+        public float drag_magnitude = 30;
+        void Start()
+        {
+            inputManager = FindObjectOfType<InputManager>();
 
-				if (Physics.Raycast(ray, out hit, 50000.0f, unit)) //if we hit a unit
+            _selectedUnits = new List<GameObject>();
+            pointer.transform.parent = null;
+        }
+
+        void Update()
+        {
+            timer += Time.deltaTime;
+            if (selection == 0 && inputManager.doubleMouse0.DoubleClickLongPressedCheck())
+            {
+                ClearSelectedUnits();
+            }
+            else if (selection == 1 && inputManager.doubleMouse0.DoubleClickLongPressedCheck())
+            {
+                ClearSelectedUnits();
+            }
+
+
+            //0. when right mouse button clicked
+            if (Input.GetMouseButtonDown(destination))
+            {
+                timer = 0;
+            }
+
+            // 1. when selection button clicked
+            if (Input.GetMouseButtonDown(selection))
+            {
+                mousePosition1 = Input.mousePosition;
+            }
+
+            // 2. while selection button held
+            if (Input.GetMouseButton(selection))
+            {
+                if ((mousePosition1 - Input.mousePosition).magnitude > drag_magnitude) //if the mouse has moved a lot, then we enter marquee mode
+                {
+                    dragSelect = true;
+                } else if(timer > drag_delay)
 				{
-					//Debug.Log("clicked on a unit");
-					target = hit.transform.gameObject;
+                    MoveToTarget();
 				}
-				else if (Physics.Raycast(ray, out hit, 50000.0f, ground)) //if we hit ground
-				{
-					
-					target.transform.position = hit.point;
-				}
-				else
-				{
-					target = null;
-				}
+            } 
 
+            // 3. when selection button up
+            if (Input.GetMouseButtonUp(selection))
+            {
 
-				if (target != null)
-				{
-					//Debug.Log(target.transform.position);
-					SelectionSetTarget(target, Input.GetKey(KeyCode.LeftShift));
-				}
-			}
+                if (dragSelect == false) // mouse click event
+                {
+                    Ray ray = Camera.main.ScreenPointToRay(mousePosition1); //raycast from previous mouse pointer position
 
-			// 1. when left mouse button clicked
-			if (Input.GetMouseButtonDown(0))
-			{
-				p1 = Input.mousePosition;
-			}
-
-			// 2. while mouse button held
-			if (Input.GetMouseButton(0))
-			{
-				if ((p1 - Input.mousePosition).magnitude > 40) //if the mouse has moved a lot, then we enter marquee mode
-				{
-					dragSelect = true;
-				}
-			}
-
-			// 3. when mouse button up
-			if (Input.GetMouseButtonUp(0))
-			{
-
-				if (dragSelect == false) //differentiating between a rapid click cycle vs a drag-select
-				{
-					Ray ray = Camera.main.ScreenPointToRay(p1); //raycast from previous mouse pointer position
-
-					if (Physics.Raycast(ray, out hit, 50000.0f, unit)) ///if we hit something that isn't ground
+                    if (Physics.Raycast(ray, out hit, 50000.0f, unit)) ///if we hit a unit
 					{
-						UnitController unitController = hit.transform.gameObject.GetComponent<UnitController>();
-						if (unitController.tag == playerUnitTag)
-						{
-							if (Input.GetKey(KeyCode.LeftShift))
-							{
-								//Debug.Log("Inclusive Select");
-								selectedTable.AddSelected(unitController);
-							}
-							else
-							{
-								//Debug.Log("Exclusive Select");
-								selectedTable.DeselectAll();
-								selectedTable.AddSelected(unitController);
+                        UnitController unitController = hit.transform.gameObject.GetComponent<UnitController>();
+                        if (unitController != null && unitController.tag == playerUnitTag)
+                        {
+                            if (!Input.GetKey(KeyCode.LeftShift))
+                            {
+                                ClearSelectedUnits();
+                            }
+                            _selectedUnits.Add(hit.transform.gameObject);
+                        }
+                    }
+                }
+                else if (_selectableUnits != null) // drag event
+                {
+                    foreach (GameObject go in _selectableUnits)
+                        if (IsWithinSelectionBounds(go))
+                        {
+                            go.GetComponent<UnitController>().SetSelected(true);
+                            _selectedUnits.Add(go);
+                        }
+                        else
+                        {
+                            go.GetComponent<UnitController>().SetSelected(false);
+                            _selectedUnits.Remove(go);
+                        }
+                }
+                dragSelect = false;
+            }
 
-							}
-						}
+        }
 
-					}
-					else //if we didn't hit something
-					{
-						if (Input.GetKey(KeyCode.LeftShift))
-						{
-							//do nothing
-						}
-						else
-						{
-							selectedTable.DeselectAll();
-							selectionGraph.Clear();
-						}
-					}
+        private void FixedUpdate()
+        {
+            //HandleMousePointer();
 
-				}
-				else //marquee select
-				{
+        }
 
-					verts = new Vector3[4]; // initialize vertices
-					int i = 0;
-					p2 = Input.mousePosition; //get last mouse position
-					corners = getBoundingBox(p1, p2); //get 4 corners of our box
-					bool hitted = false;
-					foreach (Vector2 corner in corners)
-					{
-						var dist = 50000.0f;
-						Ray ray = Camera.main.ScreenPointToRay(corner); //cast out to world space
-																		//Debug.DrawLine(ray.origin, ray.origin + ray.direction * dist, Color.green, 1.5f);
-						if (Physics.Raycast(ray, out hit, dist, ground)) ///if we hit something
-						{
-							//Debug.Log(hit.transform.name);
-							verts[i] = new Vector3(hit.point.x, hit.point.y, hit.point.z);
-
-							Debug.DrawLine(Camera.main.ScreenToWorldPoint(corner), hit.point, Color.red, 1.0f);
-							hitted = true;
-						}
-						i++;
-					}
-
-					if (hitted)
-					{
-						//generate box from 4 vertices
-						selectionMesh = generateSelectionMesh(verts);
-
-						selectionBox = gameObject.AddComponent<MeshCollider>();
-						selectionBox.sharedMesh = selectionMesh;
-						selectionBox.convex = true;
-						selectionBox.isTrigger = true;
-
-						if (!Input.GetKey(KeyCode.LeftShift))
-						{
-							selectedTable.DeselectAll();
-						}
-
-						//destroy our slection box after 1/50th of a second
-						var waitime = (debug) ? 2.5f : 0.02f;
-						Destroy(selectionBox, waitime);
-
-					}
-
-
-				}//end marquee select
-
-				dragSelect = false;
-
-			}//end mousebutton up 
-
-		} //end update
-
-
-
-		private void FixedUpdate()
+		private void HandleMousePointer()
 		{
-			//4. Is Mouse hovering
-			if (!selectedTable.IsEmpty())
-			{
-				Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); //raycast from   mouse pointer position
+            //4. Is Mouse hovering
+            if (_selectedUnits.Count != 0)
+            {
+                pointer.SetActive(true);
 
-				if (Physics.Raycast(ray, out hit, 50000.0f, ground)) //if we hit ground
-				{
-					selectionGraph.transform.position = hit.point + Vector3.up * 2f;
-					selectionGraph.Reset(selectedTable.getSelection());
-				}
-			}
-		}
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); //raycast from   mouse pointer position
 
-		private void SelectionSetTarget(GameObject target, bool isWaypoint)
+                if (Physics.Raycast(ray, out hit, 50000.0f, ground)) //if we hit ground
+                {
+                    Vector3 point = hit.point;
+
+                    pointer.transform.position = point;
+                }
+            }
+            else
+            {
+                pointer.SetActive(false);
+            }
+        }
+
+		private void MoveToTarget()
 		{
-			List<UnitController> selection = selectedTable.getSelection();
-			List<Node> graph = selectionGraph.Graph;
-			for (int i = 0; i < selection.Count; i++)
-			{
+            _selectableUnits = GameObject.FindGameObjectsWithTag(playerUnitTag);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition); //raycast from previous mouse pointer position
+
+            if (Physics.Raycast(ray, out hit, 50000.0f, unit)) //if we hit a unit
+            {
+                //Debug.Log("clicked on a unit");
+                target = hit.transform.position;
+            }
+            else if (Physics.Raycast(ray, out hit, 50000.0f, ground)) //if we hit ground
+            {
+
+                target = hit.point;
+            }
+            else
+            {
+                target = Vector3.zero;
+            }
+            if (target != Vector3.zero)
+            {
+                //Debug.Log(target.transform.position);
+                BroadcastNewTarget(hit.point, Input.GetKey(KeyCode.LeftShift));
+            }
+        }
 
 
-				Node node = graph[i];
 
- 				node.unitController.MoveUnit(target.transform.position, node.transform.position, isWaypoint); 
-			} 
-		}
-
-		//check collisions with our dynamically created box collider
-		//===========================================================================================================================//
-		private void OnTriggerEnter(Collider other)
-		{
-			if (other.gameObject.tag == playerUnitTag)
-			{
-
-				UnitController obj = other.gameObject.GetComponentInParent<UnitController>();
-
-				selectedTable.AddSelected(obj);
-			}
-		}
+        /// <summary>
+        /// Mark all selected units as unselected
+        /// </summary>
+        void ClearSelectedUnits()
+        {
+            foreach (GameObject go in _selectedUnits)
+            {
+                go.GetComponent<UnitController>().SetSelected(false);
+            }
+            _selectedUnits = new List<GameObject>();
+        }
 
 
-
-		//draw marquee box
-		//===========================================================================================================================//
-
-		void OnGUI()
-		{
-			if (dragSelect == true)
-			{
-				// Create a rect from both mouse positions
-				var rect = Utils.GetScreenRect(p1, Input.mousePosition);
-				Utils.DrawScreenRect(rect, new Color(0.8f, 0.8f, 0.95f, 0.25f));
-				Utils.DrawScreenRectBorder(rect, 2, new Color(0.8f, 0.8f, 0.95f));
-			}
-		}
-
-
-		//create a bounding box (4 corners in order) from the start and end mouse position
-		Vector2[] getBoundingBox(Vector2 p1, Vector2 p2)
-		{
-			Vector2 newP1;
-			Vector2 newP2;
-			Vector2 newP3;
-			Vector2 newP4;
-
-			if (p1.x < p2.x) //if p1 is to the left of p2
-			{
-				if (p1.y > p2.y) // if p1 is above p2
-				{
-					newP1 = p1;
-					newP2 = new Vector2(p2.x, p1.y);
-					newP3 = new Vector2(p1.x, p2.y);
-					newP4 = p2;
-				}
-				else //if p1 is below p2
-				{
-					newP1 = new Vector2(p1.x, p2.y);
-					newP2 = p2;
-					newP3 = p1;
-					newP4 = new Vector2(p2.x, p1.y);
-				}
-			}
-			else //if p1 is to the right of p2
-			{
-				if (p1.y > p2.y) // if p1 is above p2
-				{
-					newP1 = new Vector2(p2.x, p1.y);
-					newP2 = p1;
-					newP3 = p2;
-					newP4 = new Vector2(p1.x, p2.y);
-				}
-				else //if p1 is below p2
-				{
-					newP1 = p2;
-					newP2 = new Vector2(p1.x, p2.y);
-					newP3 = new Vector2(p2.x, p1.y);
-					newP4 = p1;
-				}
-
-			}
-
-			Vector2[] corners = { newP1, newP2, newP3, newP4 }; //the corners of the bounding box in an array
-			return corners;
-
-		}
-
-
-		//generate a mesh from the 4 bottom points
-		Mesh generateSelectionMesh(Vector3[] corners)
-		{
-			Vector3[] verts = new Vector3[8]; //get the verts
-			int[] tris = { 0, 1, 2, 2, 1, 3, 4, 6, 0, 0, 6, 2, 6, 7, 2, 2, 7, 3, 7, 5, 3, 3, 5, 1, 5, 0, 1, 1, 4, 0, 4, 5, 6, 6, 5, 7 }; //map the tris of our cube
-
-			for (int i = 0; i < 4; i++) //pass in the bottom vertices
-			{
-				verts[i] = corners[i] - Vector3.up * 100.0f;
-			}
-
-			for (int j = 4; j < 8; j++) // pass in the top vertices
-			{
-				verts[j] = corners[j - 4] + Vector3.up * 100.0f;
-			}
-
-			Mesh selectionMesh = new Mesh
-			{
-				vertices = verts,
-				triangles = tris
-			};
-
-			return selectionMesh;
-
-		}
-	}
+        /// <summary>
+        /// Broadcast to all selected units that a new destination has been given.
+        /// </summary>
+        public void BroadcastNewTarget(Vector3 position, bool isWaypoint)
+        {
+            foreach (GameObject go in _selectedUnits)
+            {
+                go.GetComponent<UnitController>().MoveUnit(position, position, isWaypoint);
+            }
+        }
+    }
 }
